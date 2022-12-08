@@ -1,8 +1,6 @@
 #include "h264decoder.h"
 #include <QDebug>
 
-#include "../jt1078client.h"
-
 H264Decoder::H264Decoder()
     : m_av_codec(nullptr)
     , m_av_parser(nullptr)

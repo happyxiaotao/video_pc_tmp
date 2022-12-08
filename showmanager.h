@@ -2,6 +2,7 @@
 #define SHOWMANAGER_H
 
 #include "Login/login.h"
+#include "ShowMap/showmap.h"
 #include "car_video_view/carvideoplayer.h"
 #include <QJsonValue>
 #include <QObject>
@@ -22,6 +23,7 @@ public:
 private:
     Login* m_login;
     CarVideoPlayer* m_car_video_player;
+    ShowMap* m_show_map;
 };
 
 #endif // SHOWMANAGER_H

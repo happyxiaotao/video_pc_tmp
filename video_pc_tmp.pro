@@ -34,3 +34,6 @@ include($$PWD/Login/Login.pri)
 
 INCLUDEPATH += $$PWD/Common
 include($$PWD/Common/Common.pri)
+
+INCLUDEPATH += $$PWD/ShowMap
+include($$PWD/ShowMap/ShowMap.pri)
