@@ -31,7 +31,7 @@ void ShowMap::slot_page_load_finished(bool bIsFinished)
     QString lng = "112.13555";
     QString lat = "32.04487";
     QString strCall = "setCenter(" + lng + "," + lat + ")";
-    m_web_engine_view->page()->runJavaScript(strCall);
+    //  m_web_engine_view->page()->runJavaScript(strCall);
 }
 
 void ShowMap::slot_page_load_progress(int progress)

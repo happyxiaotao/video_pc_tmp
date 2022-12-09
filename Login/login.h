@@ -1,9 +1,8 @@
 #ifndef LOGIN_H
 #define LOGIN_H
 
-#include "httpclient.h"
+#include "../Common/httpclient.h"
 #include <QMainWindow>
-#include <QNetworkAccessManager>
 
 namespace Ui {
 class Login;
@@ -38,8 +37,6 @@ public:
 
 private:
     Ui::Login* ui;
-
-    QNetworkAccessManager* m_manager;
 
     QString m_user;
     QString m_password;

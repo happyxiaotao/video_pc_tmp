@@ -15,10 +15,8 @@ QString Login::g_text_login_failed_exception_3 = CONFIG->Get("text", "login_fail
 Login::Login(QWidget* parent)
     : QMainWindow(parent)
     , ui(new Ui::Login)
-    , m_manager(nullptr)
 {
     ui->setupUi(this);
-    m_manager = new QNetworkAccessManager(this);
 
     connect(&m_http_client, &HttpClient::sig_handler_msg, this, &Login::slot_http_finished);
 
@@ -72,11 +70,11 @@ void Login::on_pushButton_login_clicked()
     // 获取用户密码
     QString password = ui->LineEdit_password->text();
 
-    // const QString default_user = "admin";
-    // const QString default_password = "herx123!@#";
+    const QString default_user = "admin";
+    const QString default_password = "herx123###";
 
-    // user = default_user;
-    // password = default_password;
+    user = default_user;
+    password = default_password;
 
     if (user.isEmpty() || password.isEmpty()) {
         QMessageBox::warning(this, SYS_TITLE, g_text_empty_username_or_password);
@@ -96,7 +94,7 @@ void Login::on_pushButton_quit_clicked()
 
 void Login::slot_http_finished(QByteArray* array)
 {
-    qDebug() << "Login::slot_http_finished, array:" << QString(*array);
+    // qDebug() << "Login::slot_http_finished, array:" << QString(*array);
     // 登录成功应答示例
     // {"code":1,"msg":"登录成功","time":"1665732856","data":{"userinfo":{"id":1,"username":"admin","nickname":"admin","mobile":"13888888888","score":0,"status":"normal","area_id":1,"desc":null,"menu_auth":null,"user_type":3,"token":"868ea8e1-8022-464d-8b00-bffc0ab82070","user_id":1,"createtime":1665732856,"expiretime":1665819256,"expires_in":86400,"area":"襄州区"}}}
     // 失败时code=0,msg是错误信息
@@ -125,6 +123,12 @@ void Login::slot_http_finished(QByteArray* array)
     // QMessageBox::information(this, SYS_TITLE, msg.toString());
     QJsonValue* json_data = new QJsonValue(data);
     QString* user = new QString(m_user);
+
+    // 更新token
+    QString token = data["token"].toString();
+    m_http_client.SetToken(token);
+    qDebug() << "set token:" << token << "\n";
+
     emit sig_login_success(user, json_data); // json_data对应的是json中data字段保存的值
     close();
 }

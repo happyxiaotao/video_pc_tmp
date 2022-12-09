@@ -1,6 +1,7 @@
 #ifndef HTTPCLIENT_H
 #define HTTPCLIENT_H
 
+#include <QMutex>
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 
@@ -21,9 +22,17 @@ public:
     // 针对data是json格式特殊处理
     void PostJson(QNetworkRequest& request, const QByteArray& data);
 
+public:
+    static void SetToken(const QString& token);
+    static QString GetToken();
+
 private:
-    QNetworkAccessManager* m_manager;
+    static QMutex s_mutex;
+    static QString s_token;
+
+private:
     QNetworkReply* m_reply;
+    QNetworkAccessManager* m_manager;
 };
 
 #endif // HTTPCLIENT_H

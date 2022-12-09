@@ -2,10 +2,8 @@
 #define SHOWMANAGER_H
 
 #include "Login/login.h"
-#include "ShowMap/showmap.h"
-#include "car_video_view/carvideoplayer.h"
+#include "MainForm/mainform.h"
 #include <QJsonValue>
-#include <QObject>
 #include <QString>
 
 class ShowManager : public QObject {
@@ -22,8 +20,8 @@ public:
 
 private:
     Login* m_login;
-    CarVideoPlayer* m_car_video_player;
-    ShowMap* m_show_map;
+
+    MainForm* m_main_form;
 };
 
 #endif // SHOWMANAGER_H

@@ -163,6 +163,8 @@ void ConfigIni::Init()
         { "login_failed_exception_1", QString::fromLocal8Bit("登录失败，数据异常：1") },
         { "login_failed_exception_2", QString::fromLocal8Bit("登录失败，数据异常：2") },
         { "login_failed_exception_3", QString::fromLocal8Bit("登录失败，数据异常：3") },
+
+        { "get_car_real_video_tree_failed", QString::fromLocal8Bit("获取实时视频汽车列表失败") },
     };
     m_ini["text"] = text;
 

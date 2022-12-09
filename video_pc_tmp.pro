@@ -37,3 +37,10 @@ include($$PWD/Common/Common.pri)
 
 INCLUDEPATH += $$PWD/ShowMap
 include($$PWD/ShowMap/ShowMap.pri)
+
+INCLUDEPATH += $$PWD/MainForm
+include($$PWD/MainForm/MainForm.pri)
+
+
+INCLUDEPATH += $$PWD/CarInfo
+include($$PWD/CarInfo/CarInfo.pri)
