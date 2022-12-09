@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Package>
+    <DisplayName>aged</DisplayName>
+    <Description>智能监控程序主体程序</Description>
+    <Version>0.1.1</Version>
+    <ReleaseDate>2022-11-04</ReleaseDate>
+    <Default>true</Default>
+    <Script>installscript.qs</Script>
+</Package>

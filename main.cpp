@@ -1,16 +1,16 @@
-#include "car_video_view/carvideoplayer.h"
-#include "videoview.h"
+#include "MainForm/mainform.h"
+#include "showmanager.h"
 #include <QApplication>
 
 int main(int argc, char* argv[])
 {
     QApplication a(argc, argv);
 
-    //  VideoView view;
-    // view.show();
+    ShowManager show_manager;
+    show_manager.Start();
 
-    CarVideoPlayer player;
-    player.show();
+    // MainForm mainform;
+    // mainform.show();
 
     return a.exec();
 }

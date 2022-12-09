@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Installer>
+    <Name>智能监控</Name>
+    <Version>0.1.1</Version>
+    <Title>智能监控</Title>
+    <Publisher>途观科技</Publisher>
+    <!-- Directory name is used in component.xml -->
+    <StartMenuDir>tuguan_aged</StartMenuDir>
+    <TargetDir>D:\herx</TargetDir>
+</Installer>
