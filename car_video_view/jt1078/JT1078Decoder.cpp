@@ -225,7 +225,6 @@ decoder_t::ErrorType decoder_t::ParseHeaderStep2(header_t* header)
 
             header->Bt8timeStamp = m_buffer.ReadInt64();
             bIsVideo = true;
-            // printf("decoder_t::ParseHeaderStep2, video timestamp:%lld\n", header->Bt8timeStamp);
         } else if (header->DataType4 == DATA_TYPE_AUDIO) {
             if (m_buffer.ReadableBytes() < READ_AUDIO_SIZE_FOR_HEADER_SECOND) {
                 // sword::Trace("decoder_t::ParseHeaderStep2, audio header need more data,ReadableBytes:{},need size:{}", m_buffer.ReadableBytes(), READ_AUDIO_SIZE_FOR_HEADER_SECOND);
@@ -233,7 +232,6 @@ decoder_t::ErrorType decoder_t::ParseHeaderStep2(header_t* header)
                 break;
             }
             header->Bt8timeStamp = m_buffer.ReadInt64();
-            // printf("decoder_t::ParseHeaderStep2, audio timestamp:%lld\n", header->Bt8timeStamp);
         } else if (header->DataType4 == DATA_TYPE_ROUTE) {
             qDebug("decoder_t::ParseHeaderStep2, get route data\n");
         } else {

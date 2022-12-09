@@ -37,12 +37,39 @@ private:
 
     SwsContext* m_sws_context;
 
-    enum { TMP_BUFFER_SIZE = 4096 };
-    char* m_tmp_buffer;
-
     FunctorHandlerVideoBuffer m_handler_video;
 
-    uchar* m_tmp_yuv_buffer;
+    struct ImageBuffer {
+        ImageBuffer()
+        {
+            pointers[0] = pointers[1] = pointers[2] = pointers[3] = nullptr;
+            linesizes[0] = linesizes[1] = linesizes[2] = linesizes[3] = 0;
+            width = 0;
+            height = 0;
+            dst_pix_format = AV_PIX_FMT_NONE;
+            align = 1;
+            sws_ctx = nullptr;
+        }
+        ~ImageBuffer()
+        {
+            if (pointers[0] != nullptr) {
+                av_freep(&pointers[0]);
+            }
+
+            if (sws_ctx) {
+                sws_freeContext(sws_ctx);
+            }
+        }
+        uchar* pointers[4];
+        int linesizes[4];
+        int width;
+        int height;
+        AVPixelFormat dst_pix_format;
+        int align;
+
+        struct SwsContext* sws_ctx;
+    };
+    ImageBuffer* m_last_image_buffer;
 };
 
 #endif // H264DECODER_H

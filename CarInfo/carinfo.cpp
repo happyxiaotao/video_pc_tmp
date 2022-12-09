@@ -36,12 +36,12 @@ void CarInfo::AutoSetChannleList()
 
     int sum = m_channel_sum.toInt();
     char tmp[3];
-    for (int i = 0; i < sum; i++) {
+    for (int i = 1; i <= sum; i++) {
 
         snprintf(tmp, 3, "%02d", i);
         QString name = m_iccid + tmp;
 
         m_listChannel.append(new CarChannel(name));
-        qDebug() << "iccid:" << m_iccid << ",i:" << i << ",name:" << name << "\n ";
+        //   qDebug() << "iccid:" << m_iccid << ",i:" << i << ",name:" << name << "\n ";
     }
 }

@@ -13,7 +13,7 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout">
+  <layout class="QGridLayout" name="gridLayout_realvideo_body">
    <item row="0" column="0">
     <widget class="QWidget" name="widget_control" native="true">
      <property name="minimumSize">
@@ -28,7 +28,7 @@
        <height>50</height>
       </size>
      </property>
-     <layout class="QGridLayout" name="gridLayout_2">
+     <layout class="QGridLayout" name="gridLayout_realvideo_control">
       <item row="0" column="0">
        <widget class="QPushButton" name="pushButton">
         <property name="text">
@@ -88,7 +88,12 @@
     </widget>
    </item>
    <item row="1" column="0">
-    <widget class="QWidget" name="widget_videos" native="true"/>
+    <widget class="QWidget" name="gridWidget" native="true">
+     <property name="styleSheet">
+      <string notr="true"/>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_videos"/>
+    </widget>
    </item>
   </layout>
  </widget>

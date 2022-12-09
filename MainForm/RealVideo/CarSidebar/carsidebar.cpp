@@ -45,6 +45,18 @@ void CarSidebar::Start()
     m_http_client->Get(request);
 }
 
+static QString Json_Value_To_String(const QJsonValue& value)
+{
+    if (value.isDouble()) {
+        return QString("%1").arg(value.toDouble());
+    } else if (value.isString()) {
+        return value.toString();
+    } else if (value.isBool()) {
+        return QString("%1").arg(value.toBool());
+    } else {
+        return "";
+    }
+}
 void CarSidebar::SetCarTree(const QJsonValue& c, const QJsonValue& m)
 {
     QJsonArray c_json_array = c.toArray();
@@ -57,7 +69,7 @@ void CarSidebar::SetCarTree(const QJsonValue& c, const QJsonValue& m)
     QMap<QString, CarGroup*> mapGroup;
     for (auto iter = m_json_array.begin(); iter != m_json_array.end(); ++iter) {
         obj = iter->toObject();
-        id = obj["id"].toString();
+        id = Json_Value_To_String((obj["id"]));
 
         //去掉车辆管理中心分组。此组是所有分组的根节点
         if (id == "4") {
@@ -66,8 +78,10 @@ void CarSidebar::SetCarTree(const QJsonValue& c, const QJsonValue& m)
 
         CarGroup* group = new CarGroup();
         group->SetId(id);
-        group->SetName(obj["name"].toString());
-        group->SetPid(obj["pid"].toString());
+
+        group->SetName(Json_Value_To_String(obj["name"]));
+        group->SetPid(Json_Value_To_String(obj["pid"]));
+
         mapGroup[id] = group;
     }
 
@@ -76,23 +90,24 @@ void CarSidebar::SetCarTree(const QJsonValue& c, const QJsonValue& m)
     for (auto iter = c_json_array.begin(); iter != c_json_array.end(); ++iter) {
         obj = iter->toObject();
 
-        motorcadeId = obj["motorcadeId"].toString();
-        qDebug() << __FUNCTION__ << ",motorcadeId:" << motorcadeId << "\n";
+        motorcadeId = Json_Value_To_String(obj["motorcadeId"]);
+        // qDebug() << __FUNCTION__ << ",motorcadeId:" << motorcadeId << "\n";
         auto group_iter = mapGroup.find(motorcadeId);
         if (group_iter == mapGroup.end())
             continue;
 
         auto& group = group_iter.value();
         CarInfo* car = new CarInfo();
-        id = obj["id"].toString();
-        car->SetAreaName(obj["areaName"].toString());
-        car->SetCarNo(obj["carNo"].toString());
-        car->SetCarColor(obj["carNoColor"].toString());
-        car->SetChannelSum(obj["channelSum"].toString());
-        car->SetIccid(obj["iccid"].toString());
+
+        id = Json_Value_To_String(obj["id"]);
+        car->SetAreaName(Json_Value_To_String(obj["areaName"]));
+        car->SetCarNo(Json_Value_To_String(obj["carNo"]));
+        car->SetCarColor(Json_Value_To_String(obj["carNoColor"]));
+        car->SetChannelSum(Json_Value_To_String(obj["channelSum"]));
+        car->SetIccid(Json_Value_To_String(obj["iccid"]));
         car->SetId(id);
-        car->SetStatACC(obj["statAcc"].toString());
-        car->SetStatus(obj["status"].toString());
+        car->SetStatACC(Json_Value_To_String(obj["statAcc"]));
+        car->SetStatus(Json_Value_To_String(obj["status"]));
         car->SetMotorcadeId(motorcadeId);
         car->AutoSetChannleList(); //自适应设置通道列表
         group->AddCar(id, car);
@@ -203,7 +218,7 @@ void CarSidebar::SetCarTree(const QList<CarChannel*>& listChannel, QTreeWidgetIt
 
 void CarSidebar::slot_http_finished(QByteArray* array)
 {
-    qDebug() << __FUNCTION__ << ",get data len:" << array->length() << "\n";
+    qDebug() << __FUNCTION__ << ",get data len:" << array->length() << "\n"; // << ",data:" << QString(*array) << "\n";
     // 解析json数据，进行处理
     QJsonParseError err_rpt;
     QJsonDocument doc = QJsonDocument::fromJson(*array, &err_rpt); // 字符串格式化为JSON
@@ -251,11 +266,18 @@ void CarSidebar::on_treeWidget_car_itemDoubleClicked(QTreeWidgetItem* item, int 
 
     qDebug() << __FUNCTION__ << ",column:" << column << ", item name:" << item->text(column) << "\n";
 
+    // 测试车辆
+    QString default_name = "01395221031203";
+
     QString* device_id = new QString(name);
-    if (m_mapOpeningVideo.find(name) != m_mapOpeningVideo.end()) {
+    device_id = new QString(default_name);
+
+    if (m_setOpeningVideo.find(name) != m_setOpeningVideo.end()) {
+        m_setOpeningVideo.remove(name);
         emit sig_close_video(device_id);
     } else {
         // 发送信号，获取对应通道的视频
+        m_setOpeningVideo.insert(name);
         emit sig_open_video(device_id);
     }
 }

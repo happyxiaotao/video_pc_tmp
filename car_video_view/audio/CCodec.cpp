@@ -173,19 +173,15 @@ DECODE_RESULT& CCodec::DecodeAudio(const char* pInBuf, int nInBufLen, AUDIO_CODI
 {
     switch (eType) {
     case AUDIO_CODING_TYPE::eG711A:
-        qDebug("eG711A\n");
         __DecodeG711A2Pcm(pInBuf, nInBufLen);
         break;
     case AUDIO_CODING_TYPE::eG711U:
-        qDebug("eG711U\n");
         __DecodeG711U2Pcm(pInBuf, nInBufLen);
         break;
     case AUDIO_CODING_TYPE::eAdpcm:
-        qDebug("eAdpcm\n");
         __DecodeAdpcm2Pcm(pInBuf, nInBufLen);
         break;
     case AUDIO_CODING_TYPE::eG726:
-        qDebug("eG726\n");
         __DecodeG7262Pcm(pInBuf, nInBufLen);
         break;
     default:

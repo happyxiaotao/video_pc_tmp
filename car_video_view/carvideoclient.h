@@ -33,6 +33,9 @@ private slots:
     void OnReadReady();
     void OnError(QAbstractSocket::SocketError error);
 
+    // 释放资源
+    void slot_release();
+
 private:
     void InitVar(); // 有些变量需要在子线程中创建，并使用
     void ReleaseVar();
@@ -59,7 +62,7 @@ private:
     uint16_t* m_server_port;
     QString* m_device_id;
 
-    enum { TMP_READ_BUFFER_LEN = 50 * 1024 };
+    enum { TMP_READ_BUFFER_LEN = 100 * 1024 };
     char* m_tmp_read_buffer;
 
     ipc::decoder_t* m_ipc_decoder;

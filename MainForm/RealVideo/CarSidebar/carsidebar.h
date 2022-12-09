@@ -46,7 +46,7 @@ public:
 private:
     Ui::CarSidebar* ui;
     HttpClient* m_http_client;
-    QMap<QString, bool> m_mapOpeningVideo;
+    QSet<QString> m_setOpeningVideo;
 };
 
 #endif // CARSIDEBAR_H

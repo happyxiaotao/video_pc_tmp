@@ -13,9 +13,9 @@ public:
 
 public:
     void WriteData(const char* buffer, int len);
+    bool IsActiveState() { return m_audio_out->state() == QAudio::ActiveState; }
 
 private:
-    bool m_start;
     QAudioFormat m_audio_fmt;
     QAudioOutput* m_audio_out;
     MyAudioDevice* m_audio_device;

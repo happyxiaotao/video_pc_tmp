@@ -1,8 +1,7 @@
 #include "audioplayer.h"
 
 AudioPlayer::AudioPlayer()
-    : m_start(false)
-    , m_audio_out(nullptr)
+    : m_audio_out(nullptr)
     , m_audio_device(nullptr)
 {
     m_audio_fmt.setSampleRate(8000);
@@ -26,7 +25,6 @@ AudioPlayer::~AudioPlayer()
     if (m_audio_out) {
         delete m_audio_out;
     }
-    m_start = false;
     if (m_audio_device) {
         delete m_audio_device;
         m_audio_device = nullptr;
@@ -37,8 +35,7 @@ void AudioPlayer::WriteData(const char* buffer, int len)
 {
     m_audio_device->AddPcmData(buffer, len);
 
-    if (!m_start) {
-        m_start = true;
+    if (!IsActiveState()) {
         m_audio_out->start(m_audio_device);
         qDebug("AudioPlayer::WriteData, start player\n");
     }

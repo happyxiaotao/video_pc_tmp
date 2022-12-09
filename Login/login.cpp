@@ -70,7 +70,7 @@ void Login::on_pushButton_login_clicked()
     // 获取用户密码
     QString password = ui->LineEdit_password->text();
 
-    const QString default_user = "admin";
+    const QString default_user = "KFadmin";
     const QString default_password = "herx123###";
 
     user = default_user;
@@ -95,9 +95,9 @@ void Login::on_pushButton_quit_clicked()
 void Login::slot_http_finished(QByteArray* array)
 {
     // qDebug() << "Login::slot_http_finished, array:" << QString(*array);
-    // 登录成功应答示例
-    // {"code":1,"msg":"登录成功","time":"1665732856","data":{"userinfo":{"id":1,"username":"admin","nickname":"admin","mobile":"13888888888","score":0,"status":"normal","area_id":1,"desc":null,"menu_auth":null,"user_type":3,"token":"868ea8e1-8022-464d-8b00-bffc0ab82070","user_id":1,"createtime":1665732856,"expiretime":1665819256,"expires_in":86400,"area":"襄州区"}}}
-    // 失败时code=0,msg是错误信息
+    //  登录成功应答示例
+    //  {"code":1,"msg":"登录成功","time":"1665732856","data":{"userinfo":{"id":1,"username":"admin","nickname":"admin","mobile":"13888888888","score":0,"status":"normal","area_id":1,"desc":null,"menu_auth":null,"user_type":3,"token":"868ea8e1-8022-464d-8b00-bffc0ab82070","user_id":1,"createtime":1665732856,"expiretime":1665819256,"expires_in":86400,"area":"襄州区"}}}
+    //  失败时code=0,msg是错误信息
     QJsonParseError err_rpt;
     QJsonDocument doc = QJsonDocument::fromJson(*array, &err_rpt); // 字符串格式化为JSON
     if (err_rpt.error != QJsonParseError::NoError) {
