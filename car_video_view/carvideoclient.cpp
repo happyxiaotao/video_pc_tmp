@@ -31,6 +31,7 @@ CarVideoClient::~CarVideoClient()
 
 void CarVideoClient::slot_connect(QHostAddress* host, uint16_t* port, QString* strDeviceId)
 {
+    qDebug() << __FUNCTION__ << "\n";
     InitVar();
     ConnectToHost(*host, *port, *strDeviceId);
 
@@ -44,6 +45,7 @@ void CarVideoClient::slot_connect(QHostAddress* host, uint16_t* port, QString* s
 
 void CarVideoClient::slot_disconnect()
 {
+    qDebug() << __FUNCTION__ << "\n";
     Disconnect();
     ReleaseVar();
 }
@@ -65,6 +67,7 @@ void CarVideoClient::Disconnect()
         SendIpcPkt(ipc::IPC_PKT_UNSUBSCRIBE_DEVICE_ID, ""); //其实没必要发，pc_server会自动取消订阅，但是使用有始有终心里舒服些，还是发一个，哈哈
     }
     m_client_socket->disconnectFromHost();
+    m_client_socket->abort();
 }
 
 int CarVideoClient::SendIpcPkt(ipc::IpcPktType type, const char* data, size_t len)
@@ -182,22 +185,37 @@ void CarVideoClient::InitVar()
     m_audio_player = new AudioPlayer();
 }
 
+#define DELETE(x)        \
+    do {                 \
+        if (x) {         \
+            delete x;    \
+            x = nullptr; \
+        }                \
+    } while (0)
+#define DELETEV(x)       \
+    do {                 \
+        if (x) {         \
+            delete[] x;  \
+            x = nullptr; \
+        }                \
+    } while (0)
 void CarVideoClient::ReleaseVar()
 {
-    delete m_client_socket;
-    delete m_server_address;
-    delete m_server_port;
-    delete m_device_id;
-    delete[] m_tmp_read_buffer;
-    delete m_ipc_decoder;
-    delete m_uLastSendIpcPktSeqId;
-    delete m_tmp_write_buffer;
-    delete m_jt1078_packet;
-    delete m_video_buffer;
-    delete m_audio_buffer;
-    delete m_h264_decoder;
-    delete m_audio_codec;
-    delete m_audio_player;
+    DELETE(m_client_socket);
+
+    DELETE(m_server_address);
+    DELETE(m_server_port);
+    DELETE(m_device_id);
+    DELETEV(m_tmp_read_buffer);
+    DELETE(m_ipc_decoder);
+    DELETE(m_uLastSendIpcPktSeqId);
+    DELETE(m_tmp_write_buffer);
+    DELETE(m_jt1078_packet);
+    DELETE(m_video_buffer);
+    DELETE(m_audio_buffer);
+    DELETE(m_h264_decoder);
+    DELETE(m_audio_codec);
+    DELETE(m_audio_player);
 }
 
 int CarVideoClient::ProcessIpcPacketCompleted(const ipc::packet_t& packet)
@@ -217,6 +235,9 @@ int CarVideoClient::ProcessIpcPacketCompleted(const ipc::packet_t& packet)
     p += len;
     len = 0;
     // qDebug("1078 packet,seq=%ld", m_jt1078_packet->m_header->WdPackageSequence);
+
+    Q_UNUSED(p);
+    Q_UNUSED(len);
 
     ProcessJt1078Packet(m_jt1078_packet);
 
@@ -266,6 +287,7 @@ int CarVideoClient::ProcessJt1078Packet(const jt1078::packet_t* packet)
 
             if (bComplated) {
                 bool bIsKeyFrame = false;
+
                 // 这里将帧转化下
                 switch (packet->m_header->DataType4) {
                 case DATA_TYPE_VIDEO_I:
@@ -278,7 +300,7 @@ int CarVideoClient::ProcessJt1078Packet(const jt1078::packet_t* packet)
                 default:
                     break;
                 }
-
+                Q_UNUSED(bIsKeyFrame);
                 // nRet = WriteVideoData(m_video_buffer.c_str(), m_video_buffer.size(), bIsKeyFrame, packet->m_header->Bt8timeStamp);
 
                 nRet = ProcessJt1078VideoData(m_video_buffer->c_str(), m_video_buffer->size());

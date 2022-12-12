@@ -9,23 +9,39 @@
 #include <QMessageBox>
 #include <QNetworkCookie>
 
+#include <QStringListModel>
+
 QString CarSidebar::s_text_get_car_real_video_tree_failed = CONFIG->Get("text", "get_car_real_video_tree_failed", "");
 
 CarSidebar::CarSidebar(QWidget* parent)
     : QWidget(parent)
     , ui(new Ui::CarSidebar)
     , m_http_client(nullptr)
+    , m_search_completer(nullptr)
 {
     ui->setupUi(this);
     m_http_client = new HttpClient(this);
 
     connect(m_http_client, &HttpClient::sig_handler_msg, this, &CarSidebar::slot_http_finished);
+
+    m_search_completer = new QCompleter(ui->lineEdit_search_input); // 设置父对象为ui->lineEdit后，不需要显式delete资源
+    m_search_completer->setCaseSensitivity(Qt::CaseInsensitive); //忽略大小写
+    m_search_completer->setFilterMode(Qt::MatchFlags::enum_type::MatchContains);
+    ui->lineEdit_search_input->setCompleter(m_search_completer); //绑定completer
 }
 
 CarSidebar::~CarSidebar()
 {
     disconnect(m_http_client);
     delete m_http_client;
+
+    for (auto iter = m_mapGroup.begin(); iter != m_mapGroup.end(); ++iter) {
+        delete iter.value();
+    }
+    m_mapGroup.clear();
+
+    ClearCarListForSearch();
+
     delete ui;
 }
 
@@ -115,28 +131,15 @@ void CarSidebar::SetCarTree(const QJsonValue& c, const QJsonValue& m)
 
     SetCarTree(mapGroup);
 
-    for (auto iter = mapGroup.begin(); iter != mapGroup.end(); ++iter) {
-        delete iter.value();
-    }
-    mapGroup.clear();
+    m_mapGroup = std::move(mapGroup);
+
+    UpdateCarListForSearch(m_mapGroup);
 }
 
 // 现在是所有的车队，将车队都加载到树状图中，同时处理一个分组包含多个子分组的情况
 void CarSidebar::SetCarTree(QMap<QString, CarGroup*>& mapGroup)
 {
     ui->treeWidget_car->reset();
-
-    //  QList<QTreeWidgetItem*> list;
-
-    //  for (auto& iter : mapGroup) {
-    //      QTreeWidgetItem* item = new QTreeWidgetItem();
-    //      item->setText(0, iter->GetName());
-    //      list.append(item);
-    //  }
-    //  qDebug() << "list count=" << list.count() << "\n";
-    //  ui->treeWidget_car->addTopLevelItems(list);
-    //  // qDeleteAll(list); //不能调用qDeleteAll将list里面的指针数据释放，否则UI会不展示了。
-    //  list.clear();
 
     QList<QTreeWidgetItem*> list;
 
@@ -158,7 +161,7 @@ void CarSidebar::SetCarTree(QMap<QString, CarGroup*>& mapGroup)
 
     // 此时还mapGroup中保存的，是顶点节点
     for (auto& iter : mapGroup) {
-        QTreeWidgetItem* item = new QTreeWidgetItem();
+        QTreeWidgetItem* item = new QTreeWidgetItem(ui->treeWidget_car);
         item->setText(0, iter->GetName());
         list.append(item);
 
@@ -216,6 +219,86 @@ void CarSidebar::SetCarTree(const QList<CarChannel*>& listChannel, QTreeWidgetIt
     list.clear();
 }
 
+void CarSidebar::ClearCarListForSearch()
+{
+    m_search_completer->setModel(nullptr);
+}
+
+void CarSidebar::UpdateCarListForSearch(QMap<QString, CarGroup*>& mapGroup)
+{
+    ClearCarListForSearch();
+    QStringList list;
+    UpdateCarListForSearch(mapGroup, list);
+    QStringListModel* model = new QStringListModel(list, m_search_completer); //设置父对象为m_search_completer时，在setModel函数中会delete旧的model
+    m_search_completer->setModel(model);
+}
+
+void CarSidebar::UpdateCarListForSearch(QMap<QString, CarGroup*>& mapGroup, QStringList& list)
+{
+    for (const auto& group : mapGroup) {
+        UpdateCarListForSearch(*group, list);
+    }
+}
+
+void CarSidebar::UpdateCarListForSearch(const CarGroup& group, QStringList& list)
+{
+    if (group.EmptyGroup()) {
+        const auto& mapCar = group.GetCarMap();
+        for (const auto& car : mapCar) {
+            const auto& car_no = car->GetCarNo();
+            list.append(car_no);
+        }
+    } else {
+        const auto& mapGroup = group.GetGroupMap();
+        for (const auto& iter : mapGroup) {
+            UpdateCarListForSearch(*iter, list);
+        }
+    }
+}
+
+void CarSidebar::FindAndJumpFromTree(const QString& car_no)
+{
+    if (car_no.isEmpty()) {
+        return;
+    }
+    // 如果和当前一致，则不需要跳转
+    if (ui->treeWidget_car->currentItem()) {
+        QString cur_car_no = ui->treeWidget_car->currentItem()->text(0);
+        qDebug() << __FUNCTION__ << ",car_no:" << car_no << ",cur_car_no:" << cur_car_no << "\n";
+        if (cur_car_no == car_no) {
+            return;
+        }
+        ui->treeWidget_car->currentItem()->setSelected(false);
+    }
+
+    // 遍历车辆树，跳转到对应位置
+    QTreeWidgetItemIterator iter(ui->treeWidget_car);
+    while (*iter) {
+        if ((*iter)->text(0) == car_no) {
+            ui->treeWidget_car->setCurrentItem(*iter);
+            break;
+        }
+        ++iter;
+    }
+    if (ui->treeWidget_car->currentItem()) {
+        ui->treeWidget_car->scrollToItem(ui->treeWidget_car->currentItem());
+    }
+}
+
+void CarSidebar::OpenOrCloseVideo(const QString& device_id)
+{
+    QString* pDeviceId = new QString(device_id);
+
+    if (m_setOpeningVideo.find(device_id) != m_setOpeningVideo.end()) {
+        m_setOpeningVideo.remove(device_id);
+        emit sig_close_video(pDeviceId);
+    } else {
+        // 发送信号，获取对应通道的视频
+        m_setOpeningVideo.insert(device_id);
+        emit sig_open_video(pDeviceId);
+    }
+}
+
 void CarSidebar::slot_http_finished(QByteArray* array)
 {
     qDebug() << __FUNCTION__ << ",get data len:" << array->length() << "\n"; // << ",data:" << QString(*array) << "\n";
@@ -254,6 +337,7 @@ void CarSidebar::on_treeWidget_car_pressed(const QModelIndex& index)
 
 void CarSidebar::on_treeWidget_car_itemDoubleClicked(QTreeWidgetItem* item, int column)
 {
+    qDebug() << __FUNCTION__ << "\n";
     // 过滤非device_id的item
     const auto& name = item->text(column);
     if (name.length() != 14) {
@@ -264,20 +348,29 @@ void CarSidebar::on_treeWidget_car_itemDoubleClicked(QTreeWidgetItem* item, int 
             return;
     }
 
-    qDebug() << __FUNCTION__ << ",column:" << column << ", item name:" << item->text(column) << "\n";
+    qDebug() << __FUNCTION__ << ",column:" << column << ", item name:" << name << "\n";
+    OpenOrCloseVideo(name);
+}
 
+void CarSidebar::on_pushButton_search_clicked()
+{
+    // 搜索
+    qDebug() << __FUNCTION__ << "\n";
+    const QString car_no = ui->lineEdit_search_input->text();
+    FindAndJumpFromTree(car_no);
+}
+
+void CarSidebar::on_lineEdit_search_input_editingFinished()
+{
+    qDebug() << __FUNCTION__ << "\n";
+    const QString car_no = ui->lineEdit_search_input->text();
+    FindAndJumpFromTree(car_no);
+}
+
+void CarSidebar::on_pushButton_clicked()
+{
     // 测试车辆
     QString default_name = "01395221031203";
 
-    QString* device_id = new QString(name);
-    device_id = new QString(default_name);
-
-    if (m_setOpeningVideo.find(name) != m_setOpeningVideo.end()) {
-        m_setOpeningVideo.remove(name);
-        emit sig_close_video(device_id);
-    } else {
-        // 发送信号，获取对应通道的视频
-        m_setOpeningVideo.insert(name);
-        emit sig_open_video(device_id);
-    }
+    OpenOrCloseVideo(default_name);
 }

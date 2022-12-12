@@ -23,6 +23,7 @@ AudioPlayer::AudioPlayer()
 AudioPlayer::~AudioPlayer()
 {
     if (m_audio_out) {
+        m_audio_out->stop();
         delete m_audio_out;
     }
     if (m_audio_device) {

@@ -28,9 +28,9 @@ void ShowMap::slot_page_load_finished(bool bIsFinished)
     qDebug() << "slotPageLoadFinished====================================" << bIsFinished;
 
     // 默认襄阳的位置
-    QString lng = "112.13555";
-    QString lat = "32.04487";
-    QString strCall = "setCenter(" + lng + "," + lat + ")";
+    // QString lng = "112.13555";
+    // QString lat = "32.04487";
+    // QString strCall = "setCenter(" + lng + "," + lat + ")";
     //  m_web_engine_view->page()->runJavaScript(strCall);
 }
 

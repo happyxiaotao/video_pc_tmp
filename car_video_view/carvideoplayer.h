@@ -23,6 +23,8 @@ public:
     void open_video(const QString& device_id);
     void close_video();
     bool IsConnected() { return m_bConnected; }
+    void ClearDeviceId() { m_device_id.clear(); }
+    void SetDeviceId(const QString& device_id) { m_device_id = device_id; }
     QString GetDeviceId() { return m_device_id; }
 signals:
     void sig_connect(QHostAddress* address, uint16_t* port, QString* pDeviceId);
@@ -38,7 +40,7 @@ public slots:
 private:
     Ui::CarVideoPlayer* ui;
     CarVideoClient* m_car_video_client; //汽车客户端，会在线程中运行，处理数据收发与数据编解码
-    QThread m_car_video_thread;
+    QThread* m_car_video_thread;
     bool m_bConnected;
     QString m_device_id;
 };

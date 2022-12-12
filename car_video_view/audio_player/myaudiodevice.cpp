@@ -35,7 +35,7 @@ qint64 MyAudioDevice::readData(char* data, qint64 maxlen)
     size_t buffer_size = m_pcm_buffer.size();
     qint64 copy_size = std::min<qint64>(maxlen, buffer_size);
 
-    qDebug("%s, maxlen=%ld,buffer_size=%ld,copy_size=%ld \n", __FUNCTION__, maxlen, buffer_size, copy_size);
+    // qDebug("%s, maxlen=%ld,buffer_size=%ld,copy_size=%ld \n", __FUNCTION__, maxlen, buffer_size, copy_size);
     if (copy_size > 0) {
         memcpy(data, buffer, copy_size);
         m_pcm_buffer.erase(0, copy_size);

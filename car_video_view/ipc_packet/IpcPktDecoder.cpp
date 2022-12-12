@@ -47,14 +47,15 @@ decoder_t::ErrorType decoder_t::PushBuffer(const char* buffer, size_t len)
 decoder_t::ErrorType decoder_t::Decode()
 {
     if (m_read_status == kReadHeader) {
-        auto& packet = _GetPacket();
-        packet.Clear();
+        auto& maybe_old_packet = _GetPacket();
+        maybe_old_packet.Clear();
         auto error = ParseHeader();
         if (error != kNoError) {
             return error;
         }
+        auto& new_packet = _GetPacket(); // ParseHeader函数执行中，内部的m_packet_buffer可能会发送扩容，maybe_old_packet指向的旧空间，需要重新指向新空间
         m_read_status = kReadBody;
-        m_howmuch = packet.m_uDataLength;
+        m_howmuch = new_packet.m_uDataLength;
     }
 
     if (m_read_status == kReadBody) {

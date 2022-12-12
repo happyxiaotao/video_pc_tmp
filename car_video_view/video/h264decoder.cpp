@@ -178,7 +178,7 @@ int H264Decoder::decode_packet(bool& got_frame, AVCodecContext* context, AVPacke
             m_last_image_buffer->sws_ctx = sws_getContext(context->width, context->height, src_pix_format,
                 width, height, m_last_image_buffer->dst_pix_format, SWS_BILINEAR, nullptr, nullptr, nullptr);
         }
-        int n = sws_scale(m_last_image_buffer->sws_ctx, (const uchar* const*)frame_h264->data, frame_h264->linesize, 0,
+        /*int n = */ sws_scale(m_last_image_buffer->sws_ctx, (const uchar* const*)frame_h264->data, frame_h264->linesize, 0,
             context->height, m_last_image_buffer->pointers, m_last_image_buffer->linesizes);
         // qDebug("width=%d,height=%d,n=%d,linesizes[0]=%d\n", frame_h264->width, frame_h264->height, n, m_last_image_buffer->linesizes[0]);
 
