@@ -20,10 +20,12 @@ CarVideoClient::CarVideoClient(QObject* parent)
     , m_audio_codec(nullptr)
     , m_audio_player(nullptr)
 {
+    qDebug() << __FUNCTION__ << ",thread_id:" << QThread::currentThreadId() << "\n";
 }
 
 CarVideoClient::~CarVideoClient()
 {
+    qDebug() << __FUNCTION__ << ",thread_id:" << QThread::currentThreadId() << "\n";
     if (m_client_socket) {
         disconnect(m_client_socket);
     }
@@ -31,7 +33,7 @@ CarVideoClient::~CarVideoClient()
 
 void CarVideoClient::slot_connect(QHostAddress* host, uint16_t* port, QString* strDeviceId)
 {
-    qDebug() << __FUNCTION__ << "\n";
+    qDebug() << __FUNCTION__ << ",thread_id:" << QThread::currentThreadId() << "\n";
     InitVar();
     ConnectToHost(*host, *port, *strDeviceId);
 
@@ -45,7 +47,7 @@ void CarVideoClient::slot_connect(QHostAddress* host, uint16_t* port, QString* s
 
 void CarVideoClient::slot_disconnect()
 {
-    qDebug() << __FUNCTION__ << "\n";
+    qDebug() << __FUNCTION__ << ",thread_id:" << QThread::currentThreadId() << "\n";
     Disconnect();
     ReleaseVar();
 }
@@ -67,7 +69,6 @@ void CarVideoClient::Disconnect()
         SendIpcPkt(ipc::IPC_PKT_UNSUBSCRIBE_DEVICE_ID, ""); //其实没必要发，pc_server会自动取消订阅，但是使用有始有终心里舒服些，还是发一个，哈哈
     }
     m_client_socket->disconnectFromHost();
-    m_client_socket->abort();
 }
 
 int CarVideoClient::SendIpcPkt(ipc::IpcPktType type, const char* data, size_t len)
@@ -99,6 +100,7 @@ uint32_t CarVideoClient::GetSendIpcPktSeqId()
 
 void CarVideoClient::OnConnected()
 {
+    qDebug() << __FUNCTION__ << ",thread_id:" << QThread::currentThreadId() << "\n";
     qDebug() << __FUNCTION__ << ",host:" << *m_server_address << ",port:" << *m_server_port << ",device_id:" << *m_device_id << "\n";
     // 发送获取视频数据请求
     int ret = SendIpcPkt(ipc::IPC_PKT_SUBSCRIBE_DEVICE_ID, m_device_id->toStdString());
@@ -109,13 +111,12 @@ void CarVideoClient::OnConnected()
 
 void CarVideoClient::OnDisconnected()
 {
-    qDebug() << __FUNCTION__ << "\n";
-    m_client_socket->disconnectFromHost();
+    qDebug() << __FUNCTION__ << ",thread_id:" << QThread::currentThreadId() << "\n";
+    m_client_socket->abort();
 }
 
 void CarVideoClient::OnReadReady()
 {
-    // qDebug() << __FUNCTION__ << "\n";
     int nread = m_client_socket->read(m_tmp_read_buffer, TMP_READ_BUFFER_LEN);
     m_tmp_read_buffer[nread] = '\0';
 
@@ -136,7 +137,7 @@ void CarVideoClient::OnReadReady()
 
 void CarVideoClient::OnError(QAbstractSocket::SocketError error)
 {
-    qDebug() << __FUNCTION__ << error << "\n";
+    qDebug() << __FUNCTION__ << ",error:" << error << ",thread_id:" << QThread::currentThreadId() << "\n";
     Disconnect();
 }
 
@@ -144,10 +145,13 @@ void CarVideoClient::slot_release()
 {
     ReleaseVar();
     this->deleteLater();
+    QThread::currentThread()->quit();
+    QThread::currentThread()->deleteLater();
 }
 
 void CarVideoClient::InitVar()
 {
+    qDebug() << __FUNCTION__ << ",thread_id:" << QThread::currentThreadId() << "\n";
     // 已经初始化过，则不需要再次初始化
     if (m_client_socket != nullptr) {
         return;
@@ -201,6 +205,7 @@ void CarVideoClient::InitVar()
     } while (0)
 void CarVideoClient::ReleaseVar()
 {
+    qDebug() << __FUNCTION__ << ",thread_id:" << QThread::currentThreadId() << "\n";
     DELETE(m_client_socket);
 
     DELETE(m_server_address);

@@ -29,6 +29,7 @@ public:
 signals:
     void sig_connect(QHostAddress* address, uint16_t* port, QString* pDeviceId);
     void sig_disconnect();
+    void sig_release_client();
 public slots:
     // 视频连接断开
     void slot_car_video_client_disconnected();
@@ -41,6 +42,7 @@ private:
     Ui::CarVideoPlayer* ui;
     CarVideoClient* m_car_video_client; //汽车客户端，会在线程中运行，处理数据收发与数据编解码
     QThread* m_car_video_thread;
+
     bool m_bConnected;
     QString m_device_id;
 };

@@ -21,20 +21,19 @@ signals:
     void sig_connected();
     void sig_disconnected();
     void sig_update_image(QImage* img);
+
 public slots:
     //收到信号，连接服务器，获取指定deviceid的数据
     void slot_connect(QHostAddress* host, uint16_t* port, QString* strDeviceId);
     //收到信号，断开服务器
     void slot_disconnect();
-
+    // 释放资源
+    void slot_release();
 private slots:
     void OnConnected();
     void OnDisconnected();
     void OnReadReady();
     void OnError(QAbstractSocket::SocketError error);
-
-    // 释放资源
-    void slot_release();
 
 private:
     void InitVar(); // 有些变量需要在子线程中创建，并使用
