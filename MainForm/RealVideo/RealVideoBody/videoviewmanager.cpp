@@ -71,7 +71,10 @@ CarVideoPlayer* VideoViewManager::GetPlayer(const QString& device_id)
         m_grid_layout->removeWidget(old_player);
     }
 
-    m_grid_layout->addWidget(player, index / m_col, index % m_row);
+    int row = index / m_col;
+    int col = index % m_row;
+    qDebug() << "index:" << index << ",row:" << row << ",col:" << col << "\n";
+    m_grid_layout->addWidget(player, row, col);
 
     return player;
 }
@@ -116,10 +119,12 @@ void VideoViewManager::GetLocation(int& row, int& col)
 
 int VideoViewManager::GetNoUsedIndex()
 {
-    int row, col;
-    GetLocation(row, col);
-    if (row == -1 || col == -1) {
-        return -1;
+
+    for (int i = 0; i < m_capacity; i++) {
+        if (!m_vecUsed[i]) {
+            return i;
+        }
     }
-    return row * m_col + col * m_row;
+
+    return -1;
 }

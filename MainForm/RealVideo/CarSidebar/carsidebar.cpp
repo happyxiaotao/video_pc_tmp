@@ -367,10 +367,45 @@ void CarSidebar::on_lineEdit_search_input_editingFinished()
     FindAndJumpFromTree(car_no);
 }
 
-void CarSidebar::on_pushButton_clicked()
+void CarSidebar::on_pushButton_test_1_clicked()
 {
     // 测试车辆
+    QString default_name = "01395221031201";
+
+    OpenOrCloseVideo(default_name);
+}
+
+void CarSidebar::on_pushButton_test_2_clicked()
+{ // 测试车辆
+    QString default_name = "01395221031202";
+
+    OpenOrCloseVideo(default_name);
+}
+
+void CarSidebar::on_pushButton_test_3_clicked()
+{ // 测试车辆
     QString default_name = "01395221031203";
+
+    OpenOrCloseVideo(default_name);
+}
+
+void CarSidebar::on_pushButton_test_4_clicked()
+{ // 测试车辆
+    QString default_name = "01395221031204";
+
+    OpenOrCloseVideo(default_name);
+}
+
+void CarSidebar::on_pushButton_test_5_clicked()
+{ // 测试车辆
+    QString default_name = "01395221031205";
+
+    OpenOrCloseVideo(default_name);
+}
+
+void CarSidebar::on_pushButton_test_6_clicked()
+{ // 测试车辆
+    QString default_name = "01395221031206";
 
     OpenOrCloseVideo(default_name);
 }

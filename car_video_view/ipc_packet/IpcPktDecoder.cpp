@@ -1,4 +1,5 @@
 #include "IpcPktDecoder.h"
+#include <QDebug>
 
 namespace ipc {
 decoder_t::ErrorType decoder_t::PushBuffer(const Buffer& buffer)
@@ -76,7 +77,7 @@ decoder_t::ErrorType decoder_t::ParseHeader()
     }
     packet_t* packet = (packet_t*)(m_buffer.GetBuffer());
     if (packet->m_uHeadLength != sizeof(packet_t)) {
-        // Error("ipc::decoder_t::ParseHeader, invalid uHeadLength,packet->m_uHeadLength={},fix size={}", packet->m_uHeadLength, sizeof(packet_t));
+        qDebug("ipc::decoder_t::ParseHeader, invalid uHeadLength,packet->m_uHeadLength=%ld,fix size=%ld\n", packet->m_uHeadLength, sizeof(packet_t));
         return kInvalidHeader;
     }
     if (packet->m_uDataLength > m_packet_buffer.capacity()) //需要扩容来保存body数据

@@ -122,6 +122,7 @@ void CarVideoClient::OnReadReady()
 
     auto error = m_ipc_decoder->PushBuffer(m_tmp_read_buffer, nread);
     if (error == ipc::decoder_t::kBufferFull) {
+        qDebug() << __FUNCTION__ << ", error:" << error << "\n";
         ProcessIpcPacketError();
         return;
     }
@@ -131,6 +132,7 @@ void CarVideoClient::OnReadReady()
         ProcessIpcPacketCompleted(packet);
     }
     if (error != ipc::decoder_t::kNeedMoreData) {
+        qDebug() << __FUNCTION__ << ", error:" << error << "\n";
         ProcessIpcPacketError();
     }
 }

@@ -14,28 +14,14 @@
    <string>Form</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="0" column="2">
-    <widget class="QPushButton" name="pushButton_search">
+   <item row="1" column="2">
+    <widget class="QPushButton" name="pushButton_test_3">
      <property name="text">
-      <string>搜索</string>
+      <string>测试通道3</string>
      </property>
     </widget>
    </item>
-   <item row="0" column="0">
-    <widget class="QLineEdit" name="lineEdit_search_input">
-     <property name="placeholderText">
-      <string>车牌号</string>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="3">
-    <widget class="QPushButton" name="pushButton">
-     <property name="text">
-      <string>播放测试车辆</string>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="0" colspan="4">
+   <item row="3" column="0" colspan="4">
     <widget class="QTreeWidget" name="treeWidget_car">
      <property name="sizeAdjustPolicy">
       <enum>QAbstractScrollArea::AdjustIgnored</enum>
@@ -54,6 +40,55 @@
        <string notr="true">1</string>
       </property>
      </column>
+    </widget>
+   </item>
+   <item row="0" column="2">
+    <widget class="QPushButton" name="pushButton_search">
+     <property name="text">
+      <string>搜索</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="0">
+    <widget class="QPushButton" name="pushButton_test_1">
+     <property name="text">
+      <string>测试通道1</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="1">
+    <widget class="QPushButton" name="pushButton_test_2">
+     <property name="text">
+      <string>测试通道2</string>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="0">
+    <widget class="QPushButton" name="pushButton_test_4">
+     <property name="text">
+      <string>测试通道4</string>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="1">
+    <widget class="QPushButton" name="pushButton_test_5">
+     <property name="text">
+      <string>测试通道5</string>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="2">
+    <widget class="QPushButton" name="pushButton_test_6">
+     <property name="text">
+      <string>测试通道6</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="0" colspan="2">
+    <widget class="QLineEdit" name="lineEdit_search_input">
+     <property name="placeholderText">
+      <string>车牌号</string>
+     </property>
     </widget>
    </item>
   </layout>

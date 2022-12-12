@@ -55,7 +55,17 @@ private slots:
 
     void on_lineEdit_search_input_editingFinished();
 
-    void on_pushButton_clicked();
+    void on_pushButton_test_1_clicked();
+
+    void on_pushButton_test_2_clicked();
+
+    void on_pushButton_test_3_clicked();
+
+    void on_pushButton_test_4_clicked();
+
+    void on_pushButton_test_5_clicked();
+
+    void on_pushButton_test_6_clicked();
 
 public:
     static QString s_text_get_car_real_video_tree_failed;
