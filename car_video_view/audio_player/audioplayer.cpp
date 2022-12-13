@@ -38,6 +38,6 @@ void AudioPlayer::WriteData(const char* buffer, int len)
 
     if (!IsActiveState()) {
         m_audio_out->start(m_audio_device);
-        qDebug("AudioPlayer::WriteData, start player\n");
+        // qDebug("AudioPlayer::WriteData, start player\n");
     }
 }

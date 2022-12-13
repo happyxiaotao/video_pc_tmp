@@ -1,15 +1,29 @@
 #include "realvideobody.h"
+#include "../../Common/configini.h"
 #include "ui_realvideobody.h"
 #include "videoviewmanager.h"
 #include <QDebug>
+#include <QGridLayout>
+QString RealVideoBody::s_resource_dir = CONFIG->Get("resource", "dir", "");
+
 RealVideoBody::RealVideoBody(QWidget* parent)
     : QWidget(parent)
     , ui(new Ui::RealVideoBody)
     , m_view_manager(nullptr)
+    , m_body_grid_layout(nullptr)
 
 {
     ui->setupUi(this);
-    m_view_manager = new VideoViewManager(ui->gridLayout_videos);
+
+    m_body_grid_layout = new QGridLayout(ui->widget_real_video_body);
+    m_body_grid_layout->setSpacing(1);
+
+    m_view_manager = new VideoViewManager(m_body_grid_layout);
+    ui->widget_real_video_body->setLayout(m_body_grid_layout);
+
+    QIcon icon;
+    icon.addFile(s_resource_dir + QString("/real_video/body_full_screen.png"), QSize(), QIcon::Normal, QIcon::Off);
+    ui->pushButton_real_video_body_full_screen->setIcon(icon);
 }
 
 RealVideoBody::~RealVideoBody()

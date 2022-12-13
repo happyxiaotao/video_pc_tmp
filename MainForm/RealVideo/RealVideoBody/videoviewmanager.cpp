@@ -18,7 +18,17 @@ VideoViewManager::VideoViewManager(QGridLayout* layout)
     }
 
     for (int i = 0; i < m_capacity; i++) {
-        m_grid_layout->addWidget(m_vecPlayer[i], i / m_col, i % m_row);
+        int row = i / m_col;
+        int col = i % m_row;
+        m_grid_layout->addWidget(m_vecPlayer[i], row, col);
+        m_grid_layout->setRowStretch(row, 1);
+        m_grid_layout->setColumnStretch(col, 1);
+    }
+
+    QSize size = m_grid_layout->itemAt(0)->sizeHint();
+    qDebug() << __FUNCTION__ << "size:" << size << "\n";
+    for (auto& iter : m_vecPlayer) {
+        iter->ShowDefaultBackGround(size);
     }
 }
 
@@ -75,6 +85,7 @@ CarVideoPlayer* VideoViewManager::GetPlayer(const QString& device_id)
     int col = index % m_row;
     qDebug() << "index:" << index << ",row:" << row << ",col:" << col << "\n";
     m_grid_layout->addWidget(player, row, col);
+    player->ShowDefaultBackGround();
 
     return player;
 }
@@ -97,6 +108,7 @@ void VideoViewManager::ReleasePlayer(CarVideoPlayer* player)
         m_grid_layout->removeWidget(player);
         auto player = new CarVideoPlayer();
         m_grid_layout->addWidget(player, index / m_col, index % m_row);
+        player->ShowDefaultBackGround();
     }
 }
 
@@ -119,7 +131,6 @@ void VideoViewManager::GetLocation(int& row, int& col)
 
 int VideoViewManager::GetNoUsedIndex()
 {
-
     for (int i = 0; i < m_capacity; i++) {
         if (!m_vecUsed[i]) {
             return i;

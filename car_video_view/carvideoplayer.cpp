@@ -1,6 +1,10 @@
 #include "carvideoplayer.h"
 #include "ui_carvideoplayer.h"
+#include <QFileInfo>
 #include <QMessageBox>
+
+QString CarVideoPlayer::s_resource_dir = CONFIG->Get("resource", "dir", "");
+QImage CarVideoPlayer::s_default_background_img;
 
 CarVideoPlayer::CarVideoPlayer(QWidget* parent)
     : QWidget(parent)
@@ -26,13 +30,17 @@ CarVideoPlayer::CarVideoPlayer(QWidget* parent)
     connect(m_car_video_client, &CarVideoClient::sig_update_image, this, &CarVideoPlayer::slot_car_video_client_update_image);
     m_car_video_client->moveToThread(m_car_video_thread);
     m_car_video_thread->start(QThread::Priority::LowPriority);
+
+    // 加载默认背景图片
+    qDebug() << __FUNCTION__ << "\n";
+    if (s_default_background_img.isNull()) {
+        QString video_bg_path = s_resource_dir + QString("/real_video/video-bg.jpg");
+        s_default_background_img.load(video_bg_path);
+    }
 }
 
 CarVideoPlayer::~CarVideoPlayer()
 {
-    // m_car_video_thread->deleteLater();
-    // m_car_video_client->deleteLater(); // 此问题，可以用：https://blog.csdn.net/ZHLCHLC/article/details/123025560这种方法测试下。
-
     emit sig_release_client();
 
     delete ui;
@@ -53,6 +61,7 @@ void CarVideoPlayer::slot_car_video_client_connected()
 void CarVideoPlayer::slot_car_video_client_update_image(QImage* img)
 {
     // qDebug() << __FUNCTION__ << "thread_id:" << QThread::currentThreadId() << ",width=" << img->width() << "\n";
+    // qDebug() << __FUNCTION__ << ",ui->label->size():" << ui->label->size() << "\n";
     if (img->size() == ui->label->size()) {
         ui->label->setPixmap(QPixmap::fromImage(*img));
     } else {
@@ -61,6 +70,20 @@ void CarVideoPlayer::slot_car_video_client_update_image(QImage* img)
     }
 
     delete img;
+}
+
+void CarVideoPlayer::resizeEvent(QResizeEvent* event)
+{
+    if (s_default_background_img.size() != ui->label->size()) {
+        QImage new_img = s_default_background_img.scaled(ui->label->size());
+        ui->label->setPixmap(QPixmap::fromImage(new_img));
+        // s_default_background_img = new_img; // 取消替换，避免出现图片模糊的情况
+    } else {
+        ui->label->setPixmap(QPixmap::fromImage(s_default_background_img));
+    }
+
+    // 加载css
+    ShowCircularBackGround();
 }
 
 void CarVideoPlayer::open_video(const QString& device_id)
@@ -77,4 +100,13 @@ void CarVideoPlayer::close_video()
     emit sig_disconnect();
     m_device_id.clear();
     ui->label->clear();
+}
+
+void CarVideoPlayer::ShowDefaultBackGround(const QSize& size)
+{
+    resizeEvent(nullptr);
+}
+
+void CarVideoPlayer::ShowCircularBackGround()
+{
 }

@@ -13,7 +13,22 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout_realvideo_body">
+  <layout class="QGridLayout" name="gridLayout_realvideo_body" rowstretch="1,10">
+   <property name="leftMargin">
+    <number>0</number>
+   </property>
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="rightMargin">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
+    <number>0</number>
+   </property>
+   <property name="spacing">
+    <number>0</number>
+   </property>
    <item row="0" column="0">
     <widget class="QWidget" name="widget_control" native="true">
      <property name="minimumSize">
@@ -29,18 +44,48 @@
       </size>
      </property>
      <layout class="QGridLayout" name="gridLayout_realvideo_control">
-      <item row="0" column="0">
-       <widget class="QPushButton" name="pushButton">
-        <property name="text">
-         <string>PushButton</string>
+      <item row="0" column="3">
+       <widget class="QComboBox" name="comboBox_2">
+        <property name="minimumSize">
+         <size>
+          <width>120</width>
+          <height>0</height>
+         </size>
         </property>
+        <item>
+         <property name="text">
+          <string>多车播放</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>单车播放</string>
+         </property>
+        </item>
        </widget>
       </item>
-      <item row="0" column="1">
-       <widget class="QPushButton" name="pushButton_2">
-        <property name="text">
-         <string>PushButton</string>
-        </property>
+      <item row="0" column="4">
+       <widget class="QComboBox" name="comboBox_3">
+        <item>
+         <property name="text">
+          <string>1*1</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>2*2</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>3*3</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>4*4</string>
+         </property>
+        </item>
        </widget>
       </item>
       <item row="0" column="2">
@@ -56,44 +101,99 @@
         </property>
        </spacer>
       </item>
-      <item row="0" column="3">
-       <widget class="QPushButton" name="pushButton_3">
+      <item row="0" column="6">
+       <widget class="QPushButton" name="pushButton_real_video_body_full_screen">
         <property name="text">
-         <string>PushButton</string>
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset>
+          <normaloff>../../../resource/real_video_body_full_screen.png</normaloff>../../../resource/real_video_body_full_screen.png</iconset>
         </property>
        </widget>
       </item>
-      <item row="0" column="4">
-       <widget class="QPushButton" name="pushButton_4">
+      <item row="0" column="0">
+       <widget class="QPushButton" name="pushButton_all_close">
         <property name="text">
-         <string>PushButton</string>
+         <string>全部关闭</string>
         </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QComboBox" name="comboBox">
+        <property name="minimumSize">
+         <size>
+          <width>150</width>
+          <height>0</height>
+         </size>
+        </property>
+        <item>
+         <property name="text">
+          <string>流畅（子码流）</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>流畅（主码流）</string>
+         </property>
+        </item>
        </widget>
       </item>
       <item row="0" column="5">
-       <widget class="QPushButton" name="pushButton_5">
-        <property name="text">
-         <string>PushButton</string>
+       <widget class="QComboBox" name="comboBox_4">
+        <property name="minimumSize">
+         <size>
+          <width>150</width>
+          <height>0</height>
+         </size>
         </property>
-       </widget>
-      </item>
-      <item row="0" column="6">
-       <widget class="QPushButton" name="pushButton_6">
-        <property name="text">
-         <string>PushButton</string>
-        </property>
+        <item>
+         <property name="text">
+          <string>满屏播放</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>2:1显示</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>16:9显示</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>4:3显示</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>1:1显示</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>3:4显示</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>1:2显示</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>9:16显示</string>
+         </property>
+        </item>
        </widget>
       </item>
      </layout>
     </widget>
    </item>
    <item row="1" column="0">
-    <widget class="QWidget" name="gridWidget" native="true">
-     <property name="styleSheet">
-      <string notr="true"/>
-     </property>
-     <layout class="QGridLayout" name="gridLayout_videos"/>
-    </widget>
+    <widget class="QWidget" name="widget_real_video_body" native="true"/>
    </item>
   </layout>
  </widget>

@@ -26,6 +26,7 @@ public:
     {
         m_buffer.Reserve(MAX_BUFFER_SIZE / 4);
         m_packet_buffer.reserve(1024);
+        m_last_packet.Clear();
     }
     ~decoder_t()
     {
@@ -50,6 +51,8 @@ private:
     std::string m_packet_buffer; //存放的有packet数据，需要通过指针使用（当做一个char[]数组使用，自带扩容机制）
     size_t m_howmuch; // 需要读取的数据长度，要求最多长度不超过
     ReadStatus m_read_status;
+
+    packet_t m_last_packet;
 };
 } // namespace  ipc
 

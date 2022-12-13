@@ -23,6 +23,9 @@ private:
     void GetLocation(int& row, int& col);
     int GetNoUsedIndex();
 
+    void ConnectSignal(CarVideoPlayer* player);
+    void DisconnectSignal(CarVideoPlayer* player);
+
 private:
     QGridLayout* m_grid_layout; // 指向外界的grid layout
 

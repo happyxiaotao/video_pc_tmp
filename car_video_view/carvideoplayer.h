@@ -1,6 +1,7 @@
 #ifndef CARVIDEOPLAYER_H
 #define CARVIDEOPLAYER_H
 
+#include "../../Common/configini.h"
 #include "carvideoclient.h"
 #include <QImage>
 #include <QPixmap>
@@ -26,6 +27,9 @@ public:
     void ClearDeviceId() { m_device_id.clear(); }
     void SetDeviceId(const QString& device_id) { m_device_id = device_id; }
     QString GetDeviceId() { return m_device_id; }
+
+    void ShowDefaultBackGround(const QSize& size = QSize());
+    void ShowCircularBackGround();
 signals:
     void sig_connect(QHostAddress* address, uint16_t* port, QString* pDeviceId);
     void sig_disconnect();
@@ -37,6 +41,14 @@ public slots:
     void slot_car_video_client_connected();
     // 视频图片更新
     void slot_car_video_client_update_image(QImage* img);
+
+private:
+    // 重写resizeEvent函数，自适应调整背景图片的大小。
+    virtual void resizeEvent(QResizeEvent* event) override;
+
+public:
+    static QString s_resource_dir;
+    static QImage s_default_background_img;
 
 private:
     Ui::CarVideoPlayer* ui;

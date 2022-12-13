@@ -104,6 +104,7 @@ bool ConfigIni::GetValue(const ConfigIni::Section& section, const QString& key, 
 
 void ConfigIni::Init()
 {
+    QString currentWorkDir = QDir::currentPath();
     Section text {
         { "system_title", QString::fromLocal8Bit("系统提示") },
         { "online", QString::fromLocal8Bit("在线") },
@@ -165,6 +166,7 @@ void ConfigIni::Init()
         { "login_failed_exception_3", QString::fromLocal8Bit("登录失败，数据异常：3") },
 
         { "get_car_real_video_tree_failed", QString::fromLocal8Bit("获取实时视频汽车列表失败") },
+
     };
     m_ini["text"] = text;
 
@@ -192,8 +194,6 @@ void ConfigIni::Init()
     };
     m_ini["api"] = api;
 
-    QString currentWorkDir = QDir::currentPath();
-
     // 下面是UserData相关设置
     Section userdata {
         { "default_json_file", currentWorkDir + "/userdata.json" },
@@ -202,4 +202,9 @@ void ConfigIni::Init()
         { "default_pg_svr_addr", "connect.peergine.com:7781" },
     };
     m_ini["userdata"] = userdata;
+
+    Section resource {
+        { "dir", currentWorkDir + QString("/resource") },
+    };
+    m_ini["resource"] = resource;
 }

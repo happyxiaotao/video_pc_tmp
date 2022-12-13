@@ -6,7 +6,7 @@
 namespace Ui {
 class RealVideoBody;
 }
-
+class QGridLayout;
 class VideoViewManager;
 class RealVideoBody : public QWidget {
     Q_OBJECT
@@ -23,10 +23,14 @@ private:
     void SetCarVideoPlayerSignals(CarVideoPlayer* player);
     void RleaseCarVideoPlayerSignals(CarVideoPlayer* player);
 
+public:
+    static QString s_resource_dir;
+
 private:
     Ui::RealVideoBody* ui;
 
     VideoViewManager* m_view_manager;
+    QGridLayout* m_body_grid_layout;
 };
 
 #endif // REALVIDEOBODY_H
