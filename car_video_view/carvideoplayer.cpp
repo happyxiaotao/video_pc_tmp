@@ -88,7 +88,8 @@ void CarVideoPlayer::resizeEvent(QResizeEvent* event)
 
 void CarVideoPlayer::open_video(const QString& device_id)
 {
-    QHostAddress* host = new QHostAddress("61.136.148.230");
+    // QHostAddress* host = new QHostAddress("61.136.148.230");
+    QHostAddress* host = new QHostAddress("127.0.0.1");
     uint16_t* port = new uint16_t(9521);
     QString* id = new QString(device_id);
     emit sig_connect(host, port, id);

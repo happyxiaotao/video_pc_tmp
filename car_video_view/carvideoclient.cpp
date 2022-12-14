@@ -62,13 +62,15 @@ void CarVideoClient::ConnectToHost(const QHostAddress& host, uint16_t port, cons
 
 void CarVideoClient::Disconnect()
 {
-    qDebug() << __FUNCTION__ << ",state=" << m_client_socket->state() << "\n";
-    if (m_client_socket->state() == QTcpSocket::ConnectedState) {
-        // auto str = m_device_id->toStdString();
-        // 目前一个连接只支持一个通道订阅，后面订阅的通道会替换到前面订阅的通道。
-        SendIpcPkt(ipc::IPC_PKT_UNSUBSCRIBE_DEVICE_ID, ""); //其实没必要发，pc_server会自动取消订阅，但是使用有始有终心里舒服些，还是发一个，哈哈
+    if (m_client_socket) {
+        qDebug() << __FUNCTION__ << ",state=" << m_client_socket->state() << "\n";
+        if (m_client_socket->state() == QTcpSocket::ConnectedState) {
+            // auto str = m_device_id->toStdString();
+            // 目前一个连接只支持一个通道订阅，后面订阅的通道会替换到前面订阅的通道。
+            SendIpcPkt(ipc::IPC_PKT_UNSUBSCRIBE_DEVICE_ID, ""); //其实没必要发，pc_server会自动取消订阅，但是使用有始有终心里舒服些，还是发一个，哈哈
+        }
+        m_client_socket->disconnectFromHost();
     }
-    m_client_socket->disconnectFromHost();
 }
 
 int CarVideoClient::SendIpcPkt(ipc::IpcPktType type, const char* data, size_t len)
@@ -147,7 +149,7 @@ void CarVideoClient::slot_release()
 {
     ReleaseVar();
     this->deleteLater();
-    QThread::currentThread()->quit();
+    QThread::currentThread()->exit(0);
     QThread::currentThread()->deleteLater();
 }
 

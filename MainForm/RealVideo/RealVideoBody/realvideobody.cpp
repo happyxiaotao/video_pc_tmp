@@ -66,3 +66,10 @@ void RealVideoBody::slot_close_video(QString* _device_id)
     player->ClearDeviceId();
     m_view_manager->ReleasePlayer(player);
 }
+
+void RealVideoBody::on_pushButton_all_close_clicked()
+{
+    // 关闭所有连接
+    m_view_manager->CloseAll();
+    emit sig_close_all();
+}

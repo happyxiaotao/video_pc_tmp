@@ -19,6 +19,8 @@ public:
     CarVideoPlayer* GetPlayer(const QString& device_id);
     void ReleasePlayer(CarVideoPlayer* player);
 
+    void CloseAll();
+
 private:
     void GetLocation(int& row, int& col);
     int GetNoUsedIndex();

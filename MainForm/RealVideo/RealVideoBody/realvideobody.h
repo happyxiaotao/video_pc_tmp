@@ -15,6 +15,8 @@ public:
     explicit RealVideoBody(QWidget* parent = nullptr);
     ~RealVideoBody();
 
+signals:
+    void sig_close_all();
 public slots:
     void slot_open_video(QString* _device_id);
     void slot_close_video(QString* _device_id);
@@ -25,6 +27,9 @@ private:
 
 public:
     static QString s_resource_dir;
+
+private slots:
+    void on_pushButton_all_close_clicked();
 
 private:
     Ui::RealVideoBody* ui;

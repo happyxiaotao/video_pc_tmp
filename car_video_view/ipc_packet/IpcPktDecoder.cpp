@@ -51,7 +51,8 @@ decoder_t::ErrorType decoder_t::Decode()
         auto& maybe_old_packet = _GetPacket();
 
         memcpy(&m_last_packet, &maybe_old_packet, sizeof(maybe_old_packet));
-        // 打印旧数据的内容
+        // 打印上一次的包头数据
+        // qDebug() << "last packet info:head len:" << m_last_packet.m_uHeadLength << ",seq id:" << m_last_packet.m_uPktSeqId << ",data len:" << m_last_packet.m_uDataLength << "\n";
 
         maybe_old_packet.Clear();
         auto error = ParseHeader();

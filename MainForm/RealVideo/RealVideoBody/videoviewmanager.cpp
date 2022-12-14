@@ -112,6 +112,27 @@ void VideoViewManager::ReleasePlayer(CarVideoPlayer* player)
     }
 }
 
+void VideoViewManager::CloseAll()
+{
+    for (int i = 0; i < m_capacity; i++) {
+        auto player = m_vecPlayer[i];
+
+        if (!player->GetDeviceId().isEmpty()) {
+            player->close_video();
+            player->ClearDeviceId();
+            m_grid_layout->removeWidget(player);
+            delete player;
+            player = new CarVideoPlayer();
+            m_grid_layout->addWidget(player, i / m_col, i % m_row);
+            player->ShowDefaultBackGround();
+            m_vecPlayer[i] = player;
+        }
+    }
+    for (int i = 0; i < m_capacity; i++) {
+        m_vecUsed[i] = false;
+    }
+}
+
 void VideoViewManager::GetLocation(int& row, int& col)
 {
     row = col = -1;

@@ -36,11 +36,14 @@ private:
     void FindAndJumpFromTree(const QString& car_no);
 
     void OpenOrCloseVideo(const QString& device_id);
+
 signals:
     void sig_open_video(QString* device_id);
     void sig_close_video(QString* device_id);
 private slots:
     void slot_http_finished(QByteArray* array);
+public slots:
+    void slot_close_all();
 private slots:
 
     void on_treeWidget_car_collapsed(const QModelIndex& index);
@@ -66,6 +69,8 @@ private slots:
     void on_pushButton_test_5_clicked();
 
     void on_pushButton_test_6_clicked();
+
+    void on_lineEdit_search_input_textChanged(const QString& arg1);
 
 public:
     static QString s_text_get_car_real_video_tree_failed;

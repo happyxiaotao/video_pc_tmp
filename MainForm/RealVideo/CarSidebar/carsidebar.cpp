@@ -320,6 +320,11 @@ void CarSidebar::slot_http_finished(QByteArray* array)
     SetCarTree(c, m);
 }
 
+void CarSidebar::slot_close_all()
+{
+    m_setOpeningVideo.clear();
+}
+
 void CarSidebar::on_treeWidget_car_collapsed(const QModelIndex& index)
 {
     ui->treeWidget_car->resizeColumnToContents(index.column());
@@ -408,4 +413,11 @@ void CarSidebar::on_pushButton_test_6_clicked()
     QString default_name = "01395221031206";
 
     OpenOrCloseVideo(default_name);
+}
+
+// 只要内容改变，就需要查找并跳转到对应的位置
+void CarSidebar::on_lineEdit_search_input_textChanged(const QString& arg1)
+{
+    const QString car_no = ui->lineEdit_search_input->text();
+    FindAndJumpFromTree(car_no);
 }

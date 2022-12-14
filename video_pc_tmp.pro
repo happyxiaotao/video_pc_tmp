@@ -23,7 +23,8 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 DISTFILES += \
-    README.md
+    README.md \
+    doc/车辆状态.png
 
 
 INCLUDEPATH += $$PWD/car_video_view
