@@ -1,7 +1,7 @@
 #include "showmanager.h"
 
-ShowManager::ShowManager(QObject* parent)
-    : QObject { parent }
+ShowManager::ShowManager(QWidget* parent)
+    : QWidget { parent }
     , m_login(nullptr)
     , m_main_form(nullptr)
 {
@@ -12,8 +12,8 @@ ShowManager::ShowManager(QObject* parent)
 ShowManager::~ShowManager()
 {
     qDebug("%s\n", __FUNCTION__);
-    delete m_main_form;
-    delete m_login;
+    m_login->deleteLater();
+    m_main_form->deleteLater();
 }
 
 void ShowManager::slot_login_success(QString* user, QJsonValue* data)

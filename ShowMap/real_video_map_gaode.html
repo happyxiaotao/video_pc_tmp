@@ -1,0 +1,121 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
+    <link rel="stylesheet" href="https://a.amap.com/jsapi_demos/static/demo-center/css/demo-center.css" />
+    <title>地图显示</title>
+    <style>
+        html,
+        body,
+        #container {
+            width: 100%;
+            height: 100%;
+        }
+
+        .amap-icon img {
+            width: 30px;
+            height: 30px;
+        }
+
+        .info {
+            position: relative;
+            margin: 0;
+            top: 0;
+            right: 0;
+            min-width: 0;
+
+            border-left: 1px solid blue;
+            border-top: 1px solid blue;
+            border-bottom: 1px solid blue;
+            border-right: 1px solid blue
+        }
+    </style>
+</head>
+
+<body>
+    <!-- 相关参考文档：https://lbs.amap.com/demo/jsapi-v2/example/marker/delete-multiple-markers -->
+    <!-- API参数说明文档：https://lbs.amap.com/api/javascript-api/reference/overlay -->
+    <div id="container"></div>
+    <!-- 加载地图JSAPI脚本 -->
+    <script src="https://webapi.amap.com/maps?v=1.4.15&key=7c930e021c985415f25c9b48929ee85a"></script>
+    <script>
+        var map = null;     // 保存地图变量
+        var first_zoom = 12; // 值越大，精度越高
+        var last_markers = [];// 两个标签，一个图标（带偏移），一个文字展示信息。// 注：使用高德的Label时，当图标旋转时，文字也会跟着旋转，导致不方便阅读。所以展示marker来达到同样的效果。
+        function createMap(zoom) {
+            destroyMap();
+            map = new AMap.Map('container', {
+                resizeEnable: true, //是否监控地图容器尺寸变化
+                zoom: zoom, //初始化地图层级
+                center: [116.397428, 39.90923] //初始化地图中心点-北京
+            });
+        }
+
+        function destroyMap() {
+            map && map.destroy();
+        }
+
+        function showCarPosition(lng, lat, image, direction, text) {
+            map.setCenter([lng, lat]); //设置地图中心点
+            delLastMarkers();
+            var position = new AMap.LngLat(lng, lat);
+            ShowMarkers(position, image, direction, text);
+        }
+        function ShowMarkers(position, image, angle, text) {
+
+            // 创建一个 icon
+            var icon = new AMap.Icon({
+                size: new AMap.Size(30, 30),
+                image: image,
+                //imageSize: new AMap.Size(30, 30),
+                imageOffset: new AMap.Pixel(0, 0)
+            });
+
+            // 将 icon 传入 marker
+            var marker = new AMap.Marker({
+                position: position,
+                icon: icon,
+                angle: angle,
+                anchor: "center",//设置基准点为center
+                offset: new AMap.Pixel(+0, +0),//根据ahchor和position位置进行偏移，使得图标展示在中间
+            });
+            last_markers.push(marker);
+
+            // 创建纯文本标记
+            var text = new AMap.Text({
+                text: '<b>' + text + '</b>',
+                anchor: 'center', // 设置文本标记锚点
+                style: {
+                    'background-color': 'white',
+                    'box-shadow': '0 2px 6px 0 rgba(114, 124, 245, .5)',
+                    'border-style': 'solid 1px',
+                    'border-color': 'blue',
+                    'text-align': 'center',
+                    'font-size': '14px',
+                    'color': 'blue'
+                },
+                offset: new AMap.Pixel(0, 30),// 放在下面的偏移量
+                position: position,
+            });
+
+            last_markers.push(text);
+
+            map.add(last_markers);
+        }
+
+        // 删除所有的marker
+        function delLastMarkers() {
+            if (last_markers) {
+                map.remove(last_markers);
+                last_markers = [];
+            }
+        }
+
+        createMap(first_zoom);
+    </script>
+</body>
+
+</html>

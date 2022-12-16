@@ -15,7 +15,7 @@ public:
     explicit ShowMap(QWidget* parent = nullptr);
     ~ShowMap();
 public slots:
-    void slot_update_car_position(QString* glat, QString* glng);
+    void slot_update_car_position(QString* glat, QString* glng, QString* image, QString* direction, QString* text);
 private slots:
     void slot_page_load_finished(bool bIsFinished); //地图加载完毕槽函数
     void slot_page_load_progress(int progress);

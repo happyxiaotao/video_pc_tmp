@@ -6,10 +6,10 @@
 #include <QJsonValue>
 #include <QString>
 
-class ShowManager : public QObject {
+class ShowManager : public QWidget {
     Q_OBJECT
 public:
-    explicit ShowManager(QObject* parent = nullptr);
+    explicit ShowManager(QWidget* parent = nullptr);
     ~ShowManager();
 signals:
 private slots:

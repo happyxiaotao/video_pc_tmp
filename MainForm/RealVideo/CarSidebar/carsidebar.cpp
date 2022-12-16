@@ -19,6 +19,18 @@ QString CarSidebar::s_text_acc_open;
 QString CarSidebar::s_text_acc_close;
 QString CarSidebar::s_text_open;
 QString CarSidebar::s_text_close;
+QString CarSidebar::s_icon_path_0;
+QString CarSidebar::s_icon_path_1;
+QString CarSidebar::s_icon_path_2;
+QString CarSidebar::s_icon_path_3;
+QString CarSidebar::s_icon_path_4;
+QString CarSidebar::s_icon_path_5;
+QString CarSidebar::s_icon_path_6;
+QString CarSidebar::s_icon_path_7;
+QString CarSidebar::s_icon_path_8;
+QString CarSidebar::s_icon_path_9;
+QString CarSidebar::s_icon_path_10;
+QString CarSidebar::s_icon_path_11;
 
 CarSidebar::CarSidebar(QWidget* parent)
     : QWidget(parent)
@@ -37,6 +49,18 @@ CarSidebar::CarSidebar(QWidget* parent)
         s_text_acc_close = QString::fromStdString(g_ini->Get("text", "acc_close", ""));
         s_text_open = QString::fromStdString(g_ini->Get("text", "open", ""));
         s_text_close = QString::fromStdString(g_ini->Get("text", "close", ""));
+        s_icon_path_0 = s_resource_dir + "/car/0.png";
+        s_icon_path_1 = s_resource_dir + "/car/1.png";
+        s_icon_path_2 = s_resource_dir + "/car/2.png";
+        s_icon_path_3 = s_resource_dir + "/car/3.png";
+        s_icon_path_4 = s_resource_dir + "/car/4.png";
+        s_icon_path_5 = s_resource_dir + "/car/5.png";
+        s_icon_path_6 = s_resource_dir + "/car/6.png";
+        s_icon_path_7 = s_resource_dir + "/car/7.png";
+        s_icon_path_8 = s_resource_dir + "/car/8.png";
+        s_icon_path_9 = s_resource_dir + "/car/9.png";
+        s_icon_path_10 = s_resource_dir + "/car/10.png";
+        s_icon_path_11 = s_resource_dir + "/car/11.png";
     }
 
     m_http_client_get_real_video_tree = new HttpClient(this);
@@ -509,6 +533,38 @@ void CarSidebar::StopTimer()
     m_timer->stop();
 }
 
+QString CarSidebar::GetIconPathByCarStatus(int nCarStatus)
+{
+    switch (nCarStatus) {
+    case 0:
+        return s_icon_path_0;
+    case 1:
+        return s_icon_path_1;
+    case 2:
+        return s_icon_path_2;
+    case 3:
+        return s_icon_path_3;
+    case 4:
+        return s_icon_path_4;
+    case 5:
+        return s_icon_path_5;
+    case 6:
+        return s_icon_path_6;
+    case 7:
+        return s_icon_path_7;
+    case 8:
+        return s_icon_path_8;
+    case 9:
+        return s_icon_path_9;
+    case 10:
+        return s_icon_path_10;
+    case 11:
+        return s_icon_path_11;
+    default:
+        return s_icon_path_10; //默认返回无效定位
+    }
+}
+
 void CarSidebar::slot_http_finished_get_real_video_tree(QByteArray* array)
 {
     qDebug() << __FUNCTION__ << ",get data len:" << array->length() << "\n";
@@ -534,7 +590,7 @@ void CarSidebar::slot_http_finished_get_real_video_tree(QByteArray* array)
 void CarSidebar::slot_http_finished_post_real_video_position(QByteArray* array)
 {
     qDebug() << __FUNCTION__ << ",get data len:" << array->length() << "\n";
-    qDebug() << __FUNCTION__ << ",data:" << QString(*array) << "\n";
+    // qDebug() << __FUNCTION__ << ",data:" << QString(*array) << "\n";
     QJsonParseError err_rpt;
     QJsonDocument doc = QJsonDocument::fromJson(*array, &err_rpt); // 字符串格式化为JSON
     if (err_rpt.error != QJsonParseError::NoError) {
@@ -550,7 +606,7 @@ void CarSidebar::slot_http_finished_post_real_video_position(QByteArray* array)
     auto jsonArray = data.toArray();
     auto first = jsonArray.first();
     auto obj = first.toObject();
-    qDebug() << obj << "\n";
+
     auto glat = obj["glat"];
     auto glng = obj["glng"];
     qDebug() << __FUNCTION__ << "glat:" << glat << ",glng:" << glng << "\n";
@@ -561,10 +617,27 @@ void CarSidebar::slot_http_finished_post_real_video_position(QByteArray* array)
     // 避免出现double与string混用的情况，统一转为string再转为double
     auto str_glat = Json_Value_To_String(glat);
     auto str_glng = Json_Value_To_String(glng);
+    auto speed = Json_Value_To_String(obj["speed"]);
+    auto car_no = Json_Value_To_String(obj["carNo"]);
+    auto direction = Json_Value_To_String(obj["direction"]);
+    auto carStatus = Json_Value_To_String(obj["carStatus"]);
 
-    // 通知地图更新中心点位置
-    emit sig_update_car_position(new QString(str_glat), new QString(str_glng));
+    // 通知地图更新中心点位置    lat lng image text
 
+    //根据位置信息，确定使用的图标
+    int nCarStatus = carStatus.toInt();
+    QString image_path = GetIconPathByCarStatus(nCarStatus);
+    // QString text = "<div class=\\\"mydiv\\\">"
+    //                "<style>"
+    //                "p.nowrap {white-space: nowrap;}"
+    //                "div.mydiv {width:105px;height:25px; background-color:white; border-left: 2px solid blue; border-top:2px solid blue; border-bottom:2px solid blue; border-right : 2px solid blue}"
+    //                "</style>"
+    //                "<p class=\\\"nowrap\\\" align=\\\"center\\\"><font color=\\\"blue\\\">"
+    //     + car_no + " " + speed + "km/h</font></p></div>";
+
+    QString text = car_no + " " + speed + "km/h";
+
+    emit sig_update_car_position(new QString(str_glat), new QString(str_glng), new QString(image_path), new QString(direction), new QString(text));
     // 启动定时器，目前是10s
     StartTimer(1000 * 10);
 }

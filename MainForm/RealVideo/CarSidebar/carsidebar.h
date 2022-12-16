@@ -48,11 +48,14 @@ private:
     void StartTimer(int ms);
     void StopTimer();
 
+    // 根据车辆状态，返回图标地址
+    QString GetIconPathByCarStatus(int nCarStatus);
+
 signals:
     void sig_open_video(QString* device_id);
     void sig_close_video(QString* device_id);
 
-    void sig_update_car_position(QString* glat, QString* glng);
+    void sig_update_car_position(QString* glat, QString* glng, QString* image, QString* direction, QString* text);
 private slots:
     // 获取视频树的回调
     void slot_http_finished_get_real_video_tree(QByteArray* array);
@@ -96,6 +99,18 @@ private:
     static QString s_text_acc_close;
     static QString s_text_open;
     static QString s_text_close;
+    static QString s_icon_path_0;
+    static QString s_icon_path_1;
+    static QString s_icon_path_2;
+    static QString s_icon_path_3;
+    static QString s_icon_path_4;
+    static QString s_icon_path_5;
+    static QString s_icon_path_6;
+    static QString s_icon_path_7;
+    static QString s_icon_path_8;
+    static QString s_icon_path_9;
+    static QString s_icon_path_10;
+    static QString s_icon_path_11;
 
 private:
     Ui::CarSidebar* ui;
