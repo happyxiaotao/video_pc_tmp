@@ -23,6 +23,14 @@ ShowMap::~ShowMap()
     delete ui;
 }
 
+void ShowMap::slot_update_car_position(QString* glat, QString* glng)
+{
+    QString strCall = "setCenter(" + *glng + "," + *glat + ")";
+    m_web_engine_view->page()->runJavaScript(strCall);
+    delete glat;
+    delete glng;
+}
+
 void ShowMap::slot_page_load_finished(bool bIsFinished)
 {
     qDebug() << "slotPageLoadFinished====================================" << bIsFinished;
@@ -31,7 +39,7 @@ void ShowMap::slot_page_load_finished(bool bIsFinished)
     // QString lng = "112.13555";
     // QString lat = "32.04487";
     // QString strCall = "setCenter(" + lng + "," + lat + ")";
-    //  m_web_engine_view->page()->runJavaScript(strCall);
+    // m_web_engine_view->page()->runJavaScript(strCall);
 }
 
 void ShowMap::slot_page_load_progress(int progress)
@@ -43,7 +51,6 @@ void ShowMap::slot_map_clickked()
 {
     qDebug() << __FUNCTION__ << "\n";
 }
-
 void ShowMap::InitMap()
 {
     // https://www.itdaan.com/blog/2016/10/22/48e4db27f97f.html

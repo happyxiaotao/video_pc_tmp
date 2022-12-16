@@ -1,35 +1,21 @@
 #include "videoviewmanager.h"
+#include "realvideobody.h"
 #include <QDebug>
 #include <QGridLayout>
-VideoViewManager::VideoViewManager(QGridLayout* layout)
-    : m_grid_layout { layout }
-    , m_row(3)
-    , m_col(3)
-    , m_capacity(9)
+VideoViewManager::VideoViewManager(RealVideoBody* real_video_body, QWidget* body)
+    : m_real_video_body(real_video_body)
+    , m_body(body)
+    , m_grid_layout { nullptr }
+    , m_row(0)
+    , m_col(0)
+    , m_nMaxHistoryRow(0)
+    , m_nMaxHistoryCol(0)
+    , m_nMaxHistoryCapacity(0)
+    , m_cur_win_count_type(WinCountType::None_None)
 {
-    m_vecUsed.resize(m_capacity);
-    for (auto& iter : m_vecUsed) {
-        iter = false;
-    }
-
-    m_vecPlayer.resize(m_capacity);
-    for (auto& iter : m_vecPlayer) {
-        iter = new CarVideoPlayer();
-    }
-
-    for (int i = 0; i < m_capacity; i++) {
-        int row = i / m_col;
-        int col = i % m_row;
-        m_grid_layout->addWidget(m_vecPlayer[i], row, col);
-        m_grid_layout->setRowStretch(row, 1);
-        m_grid_layout->setColumnStretch(col, 1);
-    }
-
-    QSize size = m_grid_layout->itemAt(0)->sizeHint();
-    qDebug() << __FUNCTION__ << "size:" << size << "\n";
-    for (auto& iter : m_vecPlayer) {
-        iter->ShowDefaultBackGround(size);
-    }
+    m_grid_layout = new QGridLayout(body);
+    m_grid_layout->setSpacing(1);
+    body->setLayout(m_grid_layout);
 }
 
 VideoViewManager::~VideoViewManager()
@@ -39,6 +25,7 @@ VideoViewManager::~VideoViewManager()
         delete player;
     }
     m_vecPlayer.clear();
+    m_grid_layout->deleteLater();
 }
 
 int VideoViewManager::Size()
@@ -50,7 +37,7 @@ int VideoViewManager::Size()
 
 CarVideoPlayer* VideoViewManager::GetPlayer(const QString& device_id)
 {
-    for (int i = 0; i < m_capacity; i++) {
+    for (int i = 0; i < m_vecPlayer.size(); i++) {
         if (m_vecPlayer[i] != nullptr && m_vecPlayer[i]->GetDeviceId() == device_id) {
             return m_vecPlayer[i];
         }
@@ -93,7 +80,7 @@ CarVideoPlayer* VideoViewManager::GetPlayer(const QString& device_id)
 void VideoViewManager::ReleasePlayer(CarVideoPlayer* player)
 {
     int index = -1;
-    for (int i = 0; i < m_capacity; i++) {
+    for (int i = 0; i < m_vecPlayer.size(); i++) {
         if (m_vecPlayer[i] == player) {
             delete m_vecPlayer[i];
             m_vecPlayer[i] = nullptr;
@@ -114,12 +101,11 @@ void VideoViewManager::ReleasePlayer(CarVideoPlayer* player)
 
 void VideoViewManager::CloseAll()
 {
-    for (int i = 0; i < m_capacity; i++) {
+    for (int i = 0; i < m_vecPlayer.size(); i++) {
         auto player = m_vecPlayer[i];
 
         if (!player->GetDeviceId().isEmpty()) {
             player->close_video();
-            player->ClearDeviceId();
             m_grid_layout->removeWidget(player);
             delete player;
             player = new CarVideoPlayer();
@@ -128,8 +114,97 @@ void VideoViewManager::CloseAll()
             m_vecPlayer[i] = player;
         }
     }
-    for (int i = 0; i < m_capacity; i++) {
+    for (int i = 0; i < m_vecPlayer.size(); i++) {
         m_vecUsed[i] = false;
+    }
+}
+
+void VideoViewManager::ChangeWinCount(WinCountType type)
+{
+    if (m_cur_win_count_type == type) {
+        return;
+    }
+
+    switch (type) {
+    case WinCountType::One_One:
+        m_row = 1;
+        m_col = 1;
+        break;
+    case WinCountType::Two_Two:
+        m_row = 2;
+        m_col = 2;
+        break;
+    case WinCountType::Three_Three:
+        m_row = 3;
+        m_col = 3;
+        break;
+    case WinCountType::Four_Four:
+        m_row = 4;
+        m_col = 4;
+        break;
+    default:
+        return;
+    }
+
+    // 新容量
+    int nOldCapacity = m_vecPlayer.size();
+    int nNewCapacity = m_row * m_col;
+
+    // 隐藏所有的图片
+    for (auto& player : m_vecPlayer) {
+        player->setVisible(false); // 隐藏起来，否则，布局会有问题
+        player->ClearLabel(); // 先清空QLabel内容，否则重新布局时，会导致窗口大小分配不平均
+    }
+
+    // m_vecPlayer如果不够，则添加
+    for (int i = nOldCapacity; i < nNewCapacity; i++) {
+        auto player = new CarVideoPlayer();
+        // player->ShowDefaultBackGround();
+        m_vecPlayer.append(player);
+    }
+
+    // 清空旧的布局
+    // 注：由于m_grid_layout通过removeItem删除不掉实际的内部布局，导致从大到小时，视频尺寸异常
+    // 处理方法待定
+    ClearGridLayout(nOldCapacity, nNewCapacity);
+    qDebug() << __FUNCTION__ << "grid,row:" << m_grid_layout->rowCount() << ",col:" << m_grid_layout->columnCount() << "\n";
+
+    // 使用新的布局
+    int row = 0;
+    int col = 0;
+    for (int i = 0; i < nNewCapacity; i++) {
+        row = i / m_col;
+        col = i % m_row;
+        m_grid_layout->addWidget(m_vecPlayer[i], row, col);
+        m_grid_layout->setRowStretch(row, 1);
+        m_grid_layout->setColumnStretch(col, 1);
+    }
+    // 删除多余视频
+    while (m_vecPlayer.size() > nNewCapacity) {
+        auto& player = m_vecPlayer.back();
+
+        QString* device_id = new QString(player->GetDeviceId());
+        emit m_real_video_body->sig_close_video(device_id);
+
+        player->close_video();
+        delete player;
+        m_vecPlayer.pop_back();
+    }
+    //设置m_vecUsed
+    m_vecUsed.resize(nNewCapacity);
+    for (int i = nOldCapacity; i < nNewCapacity; i++) {
+        m_vecUsed[i] = false;
+    }
+    // 新窗口设置背景图片
+    for (int i = nOldCapacity; i < nNewCapacity; i++) {
+        m_vecPlayer[i]->ShowDefaultBackGround();
+    }
+    // 重新设置视频尺寸
+    for (int i = 0; i < m_row; i++) {
+        for (int j = 0; j < m_col; j++) {
+            int index = i * m_col + j;
+            m_vecPlayer[index]->setVisible(true);
+        }
     }
 }
 
@@ -138,7 +213,7 @@ void VideoViewManager::GetLocation(int& row, int& col)
     row = col = -1;
 
     int location = -1;
-    for (int i = 0; i < m_capacity; i++) {
+    for (int i = 0; i < m_vecPlayer.size(); i++) {
         if (!m_vecUsed[i]) {
             location = i;
             break;
@@ -152,11 +227,35 @@ void VideoViewManager::GetLocation(int& row, int& col)
 
 int VideoViewManager::GetNoUsedIndex()
 {
-    for (int i = 0; i < m_capacity; i++) {
+    for (int i = 0; i < m_vecPlayer.size(); i++) {
         if (!m_vecUsed[i]) {
             return i;
         }
     }
 
     return -1;
+}
+
+// 由于gridlayout中的内部布局，无法实际删除，所以需要设置strech为0
+void VideoViewManager::ClearGridLayout(int nOldCapacity, int nNewCapacity)
+{
+    m_nMaxHistoryCapacity = std::max<int>(std::max<int>(nOldCapacity, nNewCapacity), m_nMaxHistoryCapacity);
+    m_nMaxHistoryRow = std::max<int>(m_nMaxHistoryRow, m_row);
+    m_nMaxHistoryCol = std::max<int>(m_nMaxHistoryCol, m_col);
+
+    QLayoutItem* child;
+    while ((child = m_grid_layout->takeAt(0)) != nullptr) {
+        child->widget()->setParent(nullptr);
+        m_grid_layout->removeWidget(child->widget());
+        delete child;
+    }
+    // 设置布局stretch为0
+    int row = 0;
+    int col = 0;
+    for (int i = 0; i < m_nMaxHistoryCapacity; i++) {
+        row = i / m_nMaxHistoryCol;
+        col = i % m_nMaxHistoryRow;
+        m_grid_layout->setRowStretch(row, 0);
+        m_grid_layout->setColumnStretch(col, 0);
+    }
 }

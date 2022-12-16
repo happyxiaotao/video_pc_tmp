@@ -1,9 +1,7 @@
 HEADERS += \
-    $$PWD/CommonDefine.h \
-    $$PWD/Singleton.hpp \
-    $$PWD/configini.h \
-    $$PWD/httpclient.h
+    $$PWD/Log.h \
+    $$PWD/httpclient.h \
+    $$PWD/ini_config.h
 
 SOURCES += \
-    $$PWD/configini.cpp \
     $$PWD/httpclient.cpp

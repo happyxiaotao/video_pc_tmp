@@ -16,6 +16,7 @@ HttpClient::HttpClient(QObject* parent)
 
 HttpClient::~HttpClient()
 {
+    qDebug() << __FUNCTION__ << "\n";
     delete m_manager;
 }
 

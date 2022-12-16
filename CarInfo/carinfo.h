@@ -5,17 +5,26 @@
 
 class CarChannel {
 public:
-    CarChannel(const QString& name)
-        : m_name(name)
+    CarChannel(const QString& deviceId, const QString& alias = QString())
+        : m_devideId(deviceId)
+        , m_alias(alias)
     {
     }
     ~CarChannel() { }
 
 public:
-    const QString& GetName() const { return m_name; }
+    const QString& GetDeviceId() const
+    {
+        return m_devideId;
+    }
+    const QString& GetAliasName() const
+    {
+        return m_alias;
+    }
 
 private:
-    QString m_name;
+    QString m_devideId;
+    QString m_alias;
 };
 
 class CarInfo {
@@ -33,11 +42,14 @@ public:
     void SetStatACC(const QString& value) { m_stat_acc = value; }
     void SetStatus(const QString& value) { m_status = value; }
     void SetMotorcadeId(const QString& value) { m_motorcade_id = value; }
+    void SetChannelType(const QString& value) { m_channelType = value; }
 
     const QString& GetCarNo() { return m_car_no; }
     const QString& GetId() { return m_id; }
     const QString& GetIccid() { return m_iccid; }
     const QString& GetMotorcadeId() { return m_motorcade_id; }
+    const QString& GetStatus() { return m_status; }
+    const QString& GetAcc() { return m_stat_acc; }
 
     // 自动设置通道列表
     void AutoSetChannleList();
@@ -54,6 +66,7 @@ private:
     QString m_stat_acc; //是否开启了acc
     QString m_status; //状态
     QString m_motorcade_id; //对应车队id
+    QString m_channelType; //通道类型（json格式，各个通道对应的外号）
 
     QList<CarChannel*> m_listChannel; // 自定义保存的的通道号
 };

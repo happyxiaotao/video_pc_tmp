@@ -6,7 +6,6 @@
 namespace Ui {
 class RealVideoBody;
 }
-class QGridLayout;
 class VideoViewManager;
 class RealVideoBody : public QWidget {
     Q_OBJECT
@@ -17,6 +16,7 @@ public:
 
 signals:
     void sig_close_all();
+    void sig_close_video(QString* device_id);
 public slots:
     void slot_open_video(QString* _device_id);
     void slot_close_video(QString* _device_id);
@@ -31,11 +31,12 @@ public:
 private slots:
     void on_pushButton_all_close_clicked();
 
+    void on_comboBox_3_currentIndexChanged(int index);
+
 private:
     Ui::RealVideoBody* ui;
 
     VideoViewManager* m_view_manager;
-    QGridLayout* m_body_grid_layout;
 };
 
 #endif // REALVIDEOBODY_H

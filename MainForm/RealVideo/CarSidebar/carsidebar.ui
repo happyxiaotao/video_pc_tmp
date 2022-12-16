@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>269</width>
+    <width>276</width>
     <height>623</height>
    </rect>
   </property>
@@ -14,10 +14,10 @@
    <string>Form</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="1" column="2">
-    <widget class="QPushButton" name="pushButton_test_3">
+   <item row="1" column="0">
+    <widget class="QPushButton" name="pushButton_test_1">
      <property name="text">
-      <string>测试通道3</string>
+      <string>测试通道1</string>
      </property>
     </widget>
    </item>
@@ -42,20 +42,6 @@
      </column>
     </widget>
    </item>
-   <item row="0" column="2">
-    <widget class="QPushButton" name="pushButton_search">
-     <property name="text">
-      <string>搜索</string>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="0">
-    <widget class="QPushButton" name="pushButton_test_1">
-     <property name="text">
-      <string>测试通道1</string>
-     </property>
-    </widget>
-   </item>
    <item row="1" column="1">
     <widget class="QPushButton" name="pushButton_test_2">
      <property name="text">
@@ -63,24 +49,17 @@
      </property>
     </widget>
    </item>
-   <item row="2" column="0">
-    <widget class="QPushButton" name="pushButton_test_4">
+   <item row="0" column="2">
+    <widget class="QPushButton" name="pushButton_search">
      <property name="text">
-      <string>测试通道4</string>
+      <string>搜索</string>
      </property>
     </widget>
    </item>
-   <item row="2" column="1">
-    <widget class="QPushButton" name="pushButton_test_5">
+   <item row="1" column="2">
+    <widget class="QPushButton" name="pushButton_test_3">
      <property name="text">
-      <string>测试通道5</string>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="2">
-    <widget class="QPushButton" name="pushButton_test_6">
-     <property name="text">
-      <string>测试通道6</string>
+      <string>测试通道3</string>
      </property>
     </widget>
    </item>
@@ -88,6 +67,13 @@
     <widget class="QLineEdit" name="lineEdit_search_input">
      <property name="placeholderText">
       <string>车牌号</string>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="0">
+    <widget class="QPushButton" name="pushButton_test_4">
+     <property name="text">
+      <string>测试通道4</string>
      </property>
     </widget>
    </item>

@@ -14,7 +14,8 @@ class ShowMap : public QWidget {
 public:
     explicit ShowMap(QWidget* parent = nullptr);
     ~ShowMap();
-
+public slots:
+    void slot_update_car_position(QString* glat, QString* glng);
 private slots:
     void slot_page_load_finished(bool bIsFinished); //地图加载完毕槽函数
     void slot_page_load_progress(int progress);

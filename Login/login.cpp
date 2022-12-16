@@ -1,16 +1,11 @@
 ﻿#include "login.h"
-#include "../Common/configini.h"
+#include "../Common/ini_config.h"
 #include "ui_login.h"
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QMessageBox>
 #include <QNetworkReply>
 #include <QSslConfiguration>
-
-QString Login::g_text_empty_username_or_password = CONFIG->Get("text", "empty_username_or_password");
-QString Login::g_text_login_failed_exception_1 = CONFIG->Get("text", "login_failed_exception_1");
-QString Login::g_text_login_failed_exception_2 = CONFIG->Get("text", "login_failed_exception_2");
-QString Login::g_text_login_failed_exception_3 = CONFIG->Get("text", "login_failed_exception_3");
 
 Login::Login(QWidget* parent)
     : QMainWindow(parent)
@@ -20,7 +15,16 @@ Login::Login(QWidget* parent)
 
     connect(&m_http_client, &HttpClient::sig_handler_msg, this, &Login::slot_http_finished);
 
-    m_login_url = CONFIG->Get("api", "user/login");
+    std::string https = g_ini->Get("api", "https", "");
+    std::string post_user_login = g_ini->Get("api", "post_user_login", "");
+    std::string login_url = https + post_user_login;
+    m_login_url = QString::fromStdString(login_url);
+
+    m_text_title = QString::fromStdString(g_ini->Get("text", "system_title", ""));
+    m_text_empty_username_or_password = QString::fromStdString(g_ini->Get("text", "empty_username_or_password", ""));
+    m_text_login_failed_exception_1 = QString::fromStdString(g_ini->Get("text", "login_failed_exception_1", ""));
+    m_text_login_failed_exception_2 = QString::fromStdString(g_ini->Get("text", "login_failed_exception_2", ""));
+    m_text_login_failed_exception_3 = QString::fromStdString(g_ini->Get("text", "login_failed_exception_3", ""));
 }
 
 Login::~Login()
@@ -77,7 +81,7 @@ void Login::on_pushButton_login_clicked()
     password = default_password;
 
     if (user.isEmpty() || password.isEmpty()) {
-        QMessageBox::warning(this, SYS_TITLE, g_text_empty_username_or_password);
+        QMessageBox::warning(this, m_text_title, m_text_empty_username_or_password);
         return;
     }
 
@@ -101,23 +105,23 @@ void Login::slot_http_finished(QByteArray* array)
     QJsonParseError err_rpt;
     QJsonDocument doc = QJsonDocument::fromJson(*array, &err_rpt); // 字符串格式化为JSON
     if (err_rpt.error != QJsonParseError::NoError) {
-        QMessageBox::warning(this, SYS_TITLE, g_text_login_failed_exception_1);
+        QMessageBox::warning(this, m_text_title, m_text_login_failed_exception_1);
         return;
     }
     auto code = doc["code"];
     auto msg = doc["msg"];
 
     if (code.isNull() || !code.isDouble()) {
-        QMessageBox::warning(this, SYS_TITLE, g_text_login_failed_exception_2);
+        QMessageBox::warning(this, m_text_title, m_text_login_failed_exception_2);
         return;
     }
     if (code.toInt() != 200) {
-        QMessageBox::warning(this, SYS_TITLE, msg.toString());
+        QMessageBox::warning(this, m_text_title, msg.toString());
         return;
     }
     auto data = doc["data"];
     if (data.isNull()) {
-        QMessageBox::warning(this, SYS_TITLE, g_text_login_failed_exception_3);
+        QMessageBox::warning(this, m_text_title, m_text_login_failed_exception_3);
         return;
     }
     // QMessageBox::information(this, SYS_TITLE, msg.toString());
@@ -130,5 +134,7 @@ void Login::slot_http_finished(QByteArray* array)
     qDebug() << "set token:" << token << "\n";
 
     emit sig_login_success(user, json_data); // json_data对应的是json中data字段保存的值
-    close();
+
+    // 释放资源
+    this->deleteLater();
 }

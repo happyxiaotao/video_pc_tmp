@@ -52,7 +52,7 @@
     <widget class="RealVideoBody" name="widget_real_video_body" native="true"/>
    </item>
    <item row="0" column="2">
-    <widget class="QWidget" name="widget_real_video_map" native="true">
+    <widget class="ShowMap" name="widget_real_video_map" native="true">
      <property name="styleSheet">
       <string notr="true"/>
      </property>
@@ -71,6 +71,12 @@
    <class>RealVideoBody</class>
    <extends>QWidget</extends>
    <header location="global">realvideobody.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>ShowMap</class>
+   <extends>QWidget</extends>
+   <header>showmap.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

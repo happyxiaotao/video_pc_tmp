@@ -2,7 +2,9 @@ FORMS += \
     $$PWD/carsidebar.ui
 
 HEADERS += \
-    $$PWD/carsidebar.h
+    $$PWD/carsidebar.h \
+    $$PWD/treecarinfoitem.h
 
 SOURCES += \
-    $$PWD/carsidebar.cpp
+    $$PWD/carsidebar.cpp \
+    $$PWD/treecarinfoitem.cpp
