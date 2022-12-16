@@ -47,15 +47,21 @@ void CarInfo::AutoSetChannleList()
 
         auto strNumber = QString::number(i);
         QString alias;
+        QJsonArray type;
         if (!m_channelType.isEmpty()) {
             auto obj = doc[strNumber].toObject();
             alias = obj["alias"].toString();
+            type = obj["type"].toArray();
         }
         if (alias.isEmpty()) {
             alias = QString::fromUtf8("通道") + strNumber;
         }
         // alias为空，则使用name代替
         auto channel = new CarChannel(strDeviceId, alias);
+
+        // 设置通道类型
+        channel->SetType(type);
+
         m_listChannel.append(channel);
         //   qDebug() << "iccid:" << m_iccid << ",i:" << i << ",name:" << name << "\n ";
     }

@@ -1,5 +1,6 @@
 #ifndef CARINFO_H
 #define CARINFO_H
+#include <QJsonArray>
 #include <QList>
 #include <QSet>
 
@@ -12,6 +13,8 @@ public:
     }
     ~CarChannel() { }
 
+    void SetType(const QJsonArray& array) { m_type = array; }
+
 public:
     const QString& GetDeviceId() const
     {
@@ -21,10 +24,15 @@ public:
     {
         return m_alias;
     }
+    const QJsonArray GetChannelType() const
+    {
+        return m_type;
+    }
 
 private:
     QString m_devideId;
     QString m_alias;
+    QJsonArray m_type;
 };
 
 class CarInfo {

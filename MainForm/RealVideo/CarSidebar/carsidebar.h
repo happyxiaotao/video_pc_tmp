@@ -22,7 +22,7 @@ public:
     ~CarSidebar();
 
 public:
-    void Start();
+    void UpdateCarTree();
 
 private:
     void SetCarTree(const QJsonValue& c, const QJsonValue& m);
@@ -39,6 +39,7 @@ private:
 
     void OpenOrCloseVideo(const QString& device_id, const QString& carId);
 
+    void ClearRealVideoTree();
     void GetRealVideoTree();
     void PostRealVideoPosition(const QString& device_id);
 
@@ -50,6 +51,7 @@ private:
 
     // 根据车辆状态，返回图标地址
     QString GetIconPathByCarStatus(int nCarStatus);
+    QString GetIconPathByChannelType(const QJsonArray& jsonArray);
 
 signals:
     void sig_open_video(QString* device_id);
@@ -90,6 +92,8 @@ private slots:
 
     void on_lineEdit_search_input_textChanged(const QString& arg1);
 
+    void on_pushButton_clicked();
+
 private:
     static QString s_resource_dir;
     static QString s_text_title;
@@ -99,18 +103,22 @@ private:
     static QString s_text_acc_close;
     static QString s_text_open;
     static QString s_text_close;
-    static QString s_icon_path_0;
-    static QString s_icon_path_1;
-    static QString s_icon_path_2;
-    static QString s_icon_path_3;
-    static QString s_icon_path_4;
-    static QString s_icon_path_5;
-    static QString s_icon_path_6;
-    static QString s_icon_path_7;
-    static QString s_icon_path_8;
-    static QString s_icon_path_9;
-    static QString s_icon_path_10;
-    static QString s_icon_path_11;
+    static QString s_icon_path_car_status_0;
+    static QString s_icon_path_car_status_1;
+    static QString s_icon_path_car_status_2;
+    static QString s_icon_path_car_status_3;
+    static QString s_icon_path_car_status_4;
+    static QString s_icon_path_car_status_5;
+    static QString s_icon_path_car_status_6;
+    static QString s_icon_path_car_status_7;
+    static QString s_icon_path_car_status_8;
+    static QString s_icon_path_car_status_9;
+    static QString s_icon_path_car_status_10;
+    static QString s_icon_path_car_status_11;
+    static QString s_icon_path_channel_type_1;
+    static QString s_icon_path_channel_type_2;
+    static QString s_icon_path_channel_type_3;
+    static QString s_icon_path_channel_type_4;
 
 private:
     Ui::CarSidebar* ui;

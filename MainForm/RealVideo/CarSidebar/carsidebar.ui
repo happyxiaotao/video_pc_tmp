@@ -70,7 +70,14 @@
      </property>
     </widget>
    </item>
-   <item row="2" column="0">
+   <item row="0" column="3">
+    <widget class="QPushButton" name="pushButton">
+     <property name="text">
+      <string>刷新</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="3">
     <widget class="QPushButton" name="pushButton_test_4">
      <property name="text">
       <string>测试通道4</string>

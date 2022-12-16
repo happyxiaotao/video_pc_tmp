@@ -19,18 +19,22 @@ QString CarSidebar::s_text_acc_open;
 QString CarSidebar::s_text_acc_close;
 QString CarSidebar::s_text_open;
 QString CarSidebar::s_text_close;
-QString CarSidebar::s_icon_path_0;
-QString CarSidebar::s_icon_path_1;
-QString CarSidebar::s_icon_path_2;
-QString CarSidebar::s_icon_path_3;
-QString CarSidebar::s_icon_path_4;
-QString CarSidebar::s_icon_path_5;
-QString CarSidebar::s_icon_path_6;
-QString CarSidebar::s_icon_path_7;
-QString CarSidebar::s_icon_path_8;
-QString CarSidebar::s_icon_path_9;
-QString CarSidebar::s_icon_path_10;
-QString CarSidebar::s_icon_path_11;
+QString CarSidebar::s_icon_path_car_status_0;
+QString CarSidebar::s_icon_path_car_status_1;
+QString CarSidebar::s_icon_path_car_status_2;
+QString CarSidebar::s_icon_path_car_status_3;
+QString CarSidebar::s_icon_path_car_status_4;
+QString CarSidebar::s_icon_path_car_status_5;
+QString CarSidebar::s_icon_path_car_status_6;
+QString CarSidebar::s_icon_path_car_status_7;
+QString CarSidebar::s_icon_path_car_status_8;
+QString CarSidebar::s_icon_path_car_status_9;
+QString CarSidebar::s_icon_path_car_status_10;
+QString CarSidebar::s_icon_path_car_status_11;
+QString CarSidebar::s_icon_path_channel_type_1;
+QString CarSidebar::s_icon_path_channel_type_2;
+QString CarSidebar::s_icon_path_channel_type_3;
+QString CarSidebar::s_icon_path_channel_type_4;
 
 CarSidebar::CarSidebar(QWidget* parent)
     : QWidget(parent)
@@ -49,18 +53,22 @@ CarSidebar::CarSidebar(QWidget* parent)
         s_text_acc_close = QString::fromStdString(g_ini->Get("text", "acc_close", ""));
         s_text_open = QString::fromStdString(g_ini->Get("text", "open", ""));
         s_text_close = QString::fromStdString(g_ini->Get("text", "close", ""));
-        s_icon_path_0 = s_resource_dir + "/car/0.png";
-        s_icon_path_1 = s_resource_dir + "/car/1.png";
-        s_icon_path_2 = s_resource_dir + "/car/2.png";
-        s_icon_path_3 = s_resource_dir + "/car/3.png";
-        s_icon_path_4 = s_resource_dir + "/car/4.png";
-        s_icon_path_5 = s_resource_dir + "/car/5.png";
-        s_icon_path_6 = s_resource_dir + "/car/6.png";
-        s_icon_path_7 = s_resource_dir + "/car/7.png";
-        s_icon_path_8 = s_resource_dir + "/car/8.png";
-        s_icon_path_9 = s_resource_dir + "/car/9.png";
-        s_icon_path_10 = s_resource_dir + "/car/10.png";
-        s_icon_path_11 = s_resource_dir + "/car/11.png";
+        s_icon_path_car_status_0 = s_resource_dir + "/car/0.png";
+        s_icon_path_car_status_1 = s_resource_dir + "/car/1.png";
+        s_icon_path_car_status_2 = s_resource_dir + "/car/2.png";
+        s_icon_path_car_status_3 = s_resource_dir + "/car/3.png";
+        s_icon_path_car_status_4 = s_resource_dir + "/car/4.png";
+        s_icon_path_car_status_5 = s_resource_dir + "/car/5.png";
+        s_icon_path_car_status_6 = s_resource_dir + "/car/6.png";
+        s_icon_path_car_status_7 = s_resource_dir + "/car/7.png";
+        s_icon_path_car_status_8 = s_resource_dir + "/car/8.png";
+        s_icon_path_car_status_9 = s_resource_dir + "/car/9.png";
+        s_icon_path_car_status_10 = s_resource_dir + "/car/10.png";
+        s_icon_path_car_status_11 = s_resource_dir + "/car/11.png";
+        s_icon_path_channel_type_1 = s_resource_dir + "/video/video1.png";
+        s_icon_path_channel_type_2 = s_resource_dir + "/video/video2.png";
+        s_icon_path_channel_type_3 = s_resource_dir + "/video/video3.png";
+        s_icon_path_channel_type_4 = s_resource_dir + "/video/video4.png";
     }
 
     m_http_client_get_real_video_tree = new HttpClient(this);
@@ -94,14 +102,7 @@ CarSidebar::~CarSidebar()
     connect(m_http_client_post_real_video_position, &HttpClient::sig_handler_msg, this, &CarSidebar::slot_http_finished_post_real_video_position);
     delete m_http_client_post_real_video_position;
 
-    for (auto iter = m_mapGroup.begin(); iter != m_mapGroup.end(); ++iter) {
-        delete iter.value();
-    }
-    m_mapGroup.clear();
-
-    ClearCarListForSearch();
-
-    ui->treeWidget_car->clear();
+    ClearRealVideoTree();
 
     disconnect(m_timer, &QTimer::timeout, this, &CarSidebar::slot_on_timer);
     m_timer->deleteLater();
@@ -109,8 +110,10 @@ CarSidebar::~CarSidebar()
     delete ui;
 }
 
-void CarSidebar::Start()
+void CarSidebar::UpdateCarTree()
 {
+    // 清空目前的车辆树
+    ClearRealVideoTree();
     GetRealVideoTree();
 }
 
@@ -257,7 +260,7 @@ void CarSidebar::SetCarTree(QMap<QString, CarGroup*>& mapGroup)
     qDebug() << "list count=" << list.count() << "\n";
     ui->treeWidget_car->addTopLevelItems(list);
     // 排序
-    ui->treeWidget_car->sortItems(0, Qt::SortOrder::AscendingOrder);
+    ui->treeWidget_car->sortItems(0, Qt::SortOrder::AscendingOrder); // 这里排序后，会导致通道也排序，导致展示效果不好。
     //  // qDeleteAll(list); //不能调用qDeleteAll将list里面的指针数据释放，否则UI会不展示了。
     list.clear();
 }
@@ -306,6 +309,11 @@ void CarSidebar::SetCarTree(const CarGroup& parent, TreeCarInfoItem* root)
             } else {
                 item->setForeground(0, Qt::blue);
             }
+
+            // 车辆前面，展示图标
+            int nStatus = status.toInt();
+            QString icon_path = GetIconPathByCarStatus(nStatus);
+            item->setIcon(0, QIcon(icon_path));
 
             const QList<CarChannel*>& listChannel = iter->GetChannelList();
             item->SetCarInfo(iter);
@@ -361,6 +369,10 @@ void CarSidebar::SetCarTree(const QList<CarChannel*>& listChannel, TreeCarInfoIt
         item->SetCarChannel(iter);
         item->SetCarId(car_id);
         ADD_LIST_WIDGET_ITEM(list, item, iter->GetAliasName());
+
+        const auto& type = iter->GetChannelType();
+        QString icon_path = GetIconPathByChannelType(type);
+        item->setIcon(0, QIcon(icon_path));
     }
     root->addChildren(list);
     list.clear();
@@ -461,6 +473,18 @@ void CarSidebar::OpenOrCloseVideo(const QString& device_id, const QString& carId
     }
 }
 
+void CarSidebar::ClearRealVideoTree()
+{
+    for (auto iter = m_mapGroup.begin(); iter != m_mapGroup.end(); ++iter) {
+        delete iter.value();
+    }
+    m_mapGroup.clear();
+
+    ClearCarListForSearch();
+
+    ui->treeWidget_car->clear();
+}
+
 void CarSidebar::GetRealVideoTree()
 {
     // 创建http请求
@@ -537,32 +561,51 @@ QString CarSidebar::GetIconPathByCarStatus(int nCarStatus)
 {
     switch (nCarStatus) {
     case 0:
-        return s_icon_path_0;
+        return s_icon_path_car_status_0;
     case 1:
-        return s_icon_path_1;
+        return s_icon_path_car_status_1;
     case 2:
-        return s_icon_path_2;
+        return s_icon_path_car_status_2;
     case 3:
-        return s_icon_path_3;
+        return s_icon_path_car_status_3;
     case 4:
-        return s_icon_path_4;
+        return s_icon_path_car_status_4;
     case 5:
-        return s_icon_path_5;
+        return s_icon_path_car_status_5;
     case 6:
-        return s_icon_path_6;
+        return s_icon_path_car_status_6;
     case 7:
-        return s_icon_path_7;
+        return s_icon_path_car_status_7;
     case 8:
-        return s_icon_path_8;
+        return s_icon_path_car_status_8;
     case 9:
-        return s_icon_path_9;
+        return s_icon_path_car_status_9;
     case 10:
-        return s_icon_path_10;
+        return s_icon_path_car_status_10;
     case 11:
-        return s_icon_path_11;
+        return s_icon_path_car_status_11;
     default:
-        return s_icon_path_10; //默认返回无效定位
+        return s_icon_path_car_status_10; //默认返回无效定位
     }
+}
+
+QString CarSidebar::GetIconPathByChannelType(const QJsonArray& jsonArray)
+{
+    const QJsonValue value0("0");
+    const QJsonValue value1("1");
+    const QJsonValue value2("2");
+    const QJsonValue value3("3");
+
+    if (jsonArray.size() == 0) {
+        return s_icon_path_channel_type_1;
+    } else if (jsonArray.contains(value1) || jsonArray.contains(value2)) {
+        return s_icon_path_channel_type_4;
+    } else if (jsonArray.contains(value3)) {
+        return s_icon_path_channel_type_3;
+    } else if (jsonArray.contains(value0)) {
+        return s_icon_path_channel_type_2;
+    }
+    return "";
 }
 
 void CarSidebar::slot_http_finished_get_real_video_tree(QByteArray* array)
@@ -752,4 +795,10 @@ void CarSidebar::on_lineEdit_search_input_textChanged(const QString& arg1)
 {
     const QString car_no = ui->lineEdit_search_input->text();
     FindAndJumpFromTree(car_no);
+}
+
+// 更新车辆树
+void CarSidebar::on_pushButton_clicked()
+{
+    UpdateCarTree();
 }
