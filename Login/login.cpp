@@ -134,7 +134,4 @@ void Login::slot_http_finished(QByteArray* array)
     qDebug() << "set token:" << token << "\n";
 
     emit sig_login_success(user, json_data); // json_data对应的是json中data字段保存的值
-
-    // 释放资源
-    this->deleteLater();
 }

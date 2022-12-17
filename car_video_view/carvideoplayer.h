@@ -20,7 +20,7 @@ public:
 
 public:
     // 点击按钮，连接服务器
-    void open_video(const QString& device_id);
+    void open_video(const QString& device_id, const QString& channel_alias);
     void close_video();
     bool IsConnected() { return m_bConnected; }
     void SetDeviceId(const QString& device_id) { m_device_id = device_id; }
@@ -34,6 +34,9 @@ signals:
     void sig_connect(QHostAddress* address, uint16_t* port, QString* pDeviceId);
     void sig_disconnect();
     void sig_release_client();
+
+    // 通过点击视频解码的左上角进行关闭
+    void sig_close_video_by_pushbutton(QString* device_id);
 public slots:
     // 视频连接断开
     void slot_car_video_client_disconnected();
@@ -50,6 +53,10 @@ public:
     static int s_inst_id;
     static QString s_resource_dir;
     static QImage s_default_background_img;
+    static QImage s_default_no_data_img;
+
+private slots:
+    void on_pushButton_clicked();
 
 private:
     Ui::CarVideoPlayer* ui;
@@ -57,6 +64,7 @@ private:
     CarVideoClient* m_car_video_client; //汽车客户端，会在线程中运行，处理数据收发与数据编解码
     QThread* m_car_video_thread;
 
+    bool m_bSendRequested; //是否发送了请求
     bool m_bConnected;
     QString m_device_id;
 };

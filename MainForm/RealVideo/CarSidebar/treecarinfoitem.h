@@ -11,9 +11,9 @@ public:
     ~TreeCarInfoItem();
 
 public:
-    bool IsGroup() { return m_car_group != nullptr; }
-    bool IsCarInfo() { return m_car_info != nullptr; }
-    bool IsCarChannel() { return m_car_channel != nullptr; }
+    bool IsGroup() const { return m_car_group != nullptr; }
+    bool IsCarInfo() const { return m_car_info != nullptr; }
+    bool IsCarChannel() const { return m_car_channel != nullptr; }
 
     // 对车队的相关操作
     void SetGroup(CarGroup* carGroup) { m_car_group = carGroup; }
@@ -33,6 +33,10 @@ public:
     QString GetChannelDeviceId() { return m_car_channel->GetDeviceId(); }
     void SetCarId(const QString& car_id) { m_car_id = car_id; } // 车的标号id
     QString GetCarId() { return m_car_id; }
+    QString GetChannelAlias() { return m_car_channel->GetAliasName(); }
+
+    // 重写比较函数，避免有昵称的通道，排序异常（通道应该根据device_id进行排序）
+    bool operator<(const QTreeWidgetItem& other) const;
 
 private:
     CarGroup* m_car_group; // 如果表示的是车队，则为非空

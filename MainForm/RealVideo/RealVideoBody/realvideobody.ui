@@ -65,7 +65,7 @@
        </widget>
       </item>
       <item row="0" column="4">
-       <widget class="QComboBox" name="comboBox_3">
+       <widget class="QComboBox" name="comboBox_real_video_wincnt">
         <item>
          <property name="text">
           <string>1*1</string>
@@ -193,10 +193,18 @@
     </widget>
    </item>
    <item row="1" column="0">
-    <widget class="QWidget" name="widget_real_video_body" native="true"/>
+    <widget class="RealVideoBodyViews" name="widget_real_video_body" native="true"/>
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>RealVideoBodyViews</class>
+   <extends>QWidget</extends>
+   <header location="global">realvideobodyviews.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

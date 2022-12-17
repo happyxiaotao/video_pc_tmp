@@ -6,6 +6,7 @@
 
 int CarVideoPlayer::s_inst_id = 0;
 QImage CarVideoPlayer::s_default_background_img;
+QImage CarVideoPlayer::s_default_no_data_img;
 QString CarVideoPlayer::s_resource_dir = QDir::currentPath() + "/resource";
 
 CarVideoPlayer::CarVideoPlayer(QWidget* parent)
@@ -14,9 +15,17 @@ CarVideoPlayer::CarVideoPlayer(QWidget* parent)
     , m_inst_id(++s_inst_id)
     , m_car_video_client(nullptr)
     , m_car_video_thread(nullptr)
+    , m_bSendRequested(false)
     , m_bConnected(false)
 {
     ui->setupUi(this);
+
+    ui->label_channel_alias->hide();
+
+    // 设置QLabel的属性sizePolicy为Ignored，来保证图片即可以放大也可以缩小
+    //  QSizePolicy policy(QSizePolicy::Ignored, QSizePolicy::Ignored);
+    // ui->label->setSizePolicy(policy);
+    // 父组件，real_video_body已经设置了QSizePolicy::Ignored，不再需要这里进行设置了。
 
     m_car_video_thread = new QThread();
 
@@ -39,6 +48,9 @@ CarVideoPlayer::CarVideoPlayer(QWidget* parent)
     if (s_default_background_img.isNull()) {
         QString video_bg_path = s_resource_dir + QString("/real_video/video-bg.jpg");
         s_default_background_img.load(video_bg_path);
+
+        QString video_no_data_path = s_resource_dir + QString("/real_video/video-no_data.png");
+        s_default_no_data_img.load(video_no_data_path);
     }
 }
 
@@ -64,7 +76,7 @@ void CarVideoPlayer::slot_car_video_client_connected()
 void CarVideoPlayer::slot_car_video_client_update_image(QImage* img)
 {
     // qDebug() << __FUNCTION__ << "thread_id:" << QThread::currentThreadId() << ",width=" << img->width() << "\n";
-    // qDebug() << __FUNCTION__ << ",ui->label->size():" << ui->label->size() << "\n";
+    // qDebug() << __FUNCTION__ << "img.size():" << img->size() << ",ui->label->size():" << ui->label->size() << "\n";
     if (img->size() == ui->label->size()) {
         ui->label->setPixmap(QPixmap::fromImage(*img));
     } else {
@@ -77,23 +89,15 @@ void CarVideoPlayer::slot_car_video_client_update_image(QImage* img)
 
 void CarVideoPlayer::resizeEvent(QResizeEvent* event)
 {
-    qDebug() << __FUNCTION__ << "inst_id:" << m_inst_id << "\n";
-
-    ui->label->setPixmap(QPixmap::fromImage(s_default_background_img));
-
-    if (s_default_background_img.size() != ui->label->size()) {
-        QImage new_img = s_default_background_img.scaled(ui->label->size());
-        ui->label->setPixmap(QPixmap::fromImage(new_img));
-        // s_default_background_img = new_img; // 取消替换，避免出现图片模糊的情况
-    } else {
-        ui->label->setPixmap(QPixmap::fromImage(s_default_background_img));
+    // qDebug() << __FUNCTION__ << "inst_id:" << m_inst_id << "\n";
+    if (!m_bSendRequested) {
+        ShowDefaultBackGround();
+    } else if (m_bSendRequested && !m_bConnected) {
+        ShowCircularBackGround();
     }
-
-    // 加载css
-    ShowCircularBackGround();
 }
 
-void CarVideoPlayer::open_video(const QString& device_id)
+void CarVideoPlayer::open_video(const QString& device_id, const QString& channel_alias)
 {
     QHostAddress* host = new QHostAddress("61.136.148.230");
     // QHostAddress* host = new QHostAddress("127.0.0.1");
@@ -101,6 +105,17 @@ void CarVideoPlayer::open_video(const QString& device_id)
     QString* id = new QString(device_id);
     emit sig_connect(host, port, id);
     m_device_id = device_id;
+
+    m_bSendRequested = true;
+
+    // 设置通道名称
+    if (channel_alias.isEmpty()) {
+        ui->label_channel_alias->hide();
+    } else {
+        ui->label_channel_alias->setText(channel_alias);
+        ui->label_channel_alias->setStyleSheet("color:white;");
+        ui->label_channel_alias->show();
+    }
 }
 
 void CarVideoPlayer::close_video()
@@ -112,14 +127,34 @@ void CarVideoPlayer::close_video()
 
 void CarVideoPlayer::ShowDefaultBackGround()
 {
-    resizeEvent(nullptr);
+    if (s_default_background_img.size() != ui->label->size()) {
+        QImage new_img = s_default_background_img.scaled(ui->label->size());
+        ui->label->setPixmap(QPixmap::fromImage(new_img));
+        // s_default_background_img = new_img; // 取消替换，避免出现图片模糊的情况。从低分辨率到高分辨率会出现图片模糊的情况。
+    } else {
+        ui->label->setPixmap(QPixmap::fromImage(s_default_background_img));
+    }
 }
 
 void CarVideoPlayer::ShowCircularBackGround()
 {
+    //  设置背景颜色为黑色
+    ui->label->setStyleSheet("QLabel{background-color:rgb(0,0,0);}"); //设置样式表
+    // 暂时还未获取数据时的图片
+    QImage new_img = s_default_no_data_img.scaled(ui->label->size()); // 图片只展示一般内容
+    ui->label->setPixmap(QPixmap::fromImage(new_img));
 }
 
 void CarVideoPlayer::ClearLabel()
 {
     ui->label->clear();
+}
+
+void CarVideoPlayer::on_pushButton_clicked()
+{
+    if (m_device_id.isEmpty()) {
+        return;
+    }
+    // 通知外界，关闭此视频。
+    emit sig_close_video_by_pushbutton(new QString(m_device_id));
 }

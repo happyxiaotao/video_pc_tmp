@@ -42,3 +42,26 @@ void TreeCarInfoItem::GetGroupOnLineCount(int& nTotalCount, int& nOnLineCount, i
     nAccOpenCount = m_nAccOpenCount;
     nAccCloseCount = m_nAccCloseCount;
 }
+
+bool TreeCarInfoItem::operator<(const QTreeWidgetItem& other) const
+{
+    const TreeCarInfoItem& right = dynamic_cast<const TreeCarInfoItem&>(other);
+
+    // 1、车队比较
+    if (IsGroup() && m_car_group) {
+        //根据车队名称比较
+        return m_car_group->GetName() < right.m_car_group->GetName();
+    }
+
+    // 2、车辆比较
+    if (IsCarInfo() && m_car_info) {
+        return m_car_info->GetCarNo() < right.m_car_info->GetCarNo();
+    }
+
+    // 3、通道比较
+    if (IsCarChannel() && m_car_channel) {
+        return m_car_channel->GetDeviceId() < right.m_car_channel->GetDeviceId();
+    }
+
+    return false;
+}

@@ -37,7 +37,7 @@ private:
 
     void FindAndJumpFromTree(const QString& car_no);
 
-    void OpenOrCloseVideo(const QString& device_id, const QString& carId);
+    void OpenOrCloseVideo(const QString& device_id, const QString& carId, const QString& channel_alias);
 
     void ClearRealVideoTree();
     void GetRealVideoTree();
@@ -54,7 +54,7 @@ private:
     QString GetIconPathByChannelType(const QJsonArray& jsonArray);
 
 signals:
-    void sig_open_video(QString* device_id);
+    void sig_open_video(QString* device_id, QString* channel_alias);
     void sig_close_video(QString* device_id);
 
     void sig_update_car_position(QString* glat, QString* glng, QString* image, QString* direction, QString* text);

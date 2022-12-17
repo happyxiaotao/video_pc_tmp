@@ -370,11 +370,13 @@ void CarSidebar::SetCarTree(const QList<CarChannel*>& listChannel, TreeCarInfoIt
         item->SetCarId(car_id);
         ADD_LIST_WIDGET_ITEM(list, item, iter->GetAliasName());
 
+        // 设置通道图标
         const auto& type = iter->GetChannelType();
         QString icon_path = GetIconPathByChannelType(type);
         item->setIcon(0, QIcon(icon_path));
     }
     root->addChildren(list);
+    root->sortChildren(0, Qt::SortOrder::AscendingOrder);
     list.clear();
 }
 
@@ -447,9 +449,10 @@ void CarSidebar::FindAndJumpFromTree(const QString& car_no)
     }
 }
 
-void CarSidebar::OpenOrCloseVideo(const QString& device_id, const QString& carId)
+void CarSidebar::OpenOrCloseVideo(const QString& device_id, const QString& carId, const QString& channel_alias)
 {
     QString* pDeviceId = new QString(device_id);
+    QString* pChannelAlias = new QString(channel_alias);
 
     if (m_setOpeningVideo.find(device_id) != m_setOpeningVideo.end()) {
         m_setOpeningVideo.remove(device_id);
@@ -464,7 +467,7 @@ void CarSidebar::OpenOrCloseVideo(const QString& device_id, const QString& carId
         m_setOpeningVideo.insert(device_id);
 
         // 获取视频
-        emit sig_open_video(pDeviceId);
+        emit sig_open_video(pDeviceId, pChannelAlias);
 
         // 发送定位请求，获取定位信息
         PostRealVideoPosition(carId);
@@ -693,11 +696,11 @@ void CarSidebar::slot_on_timer()
 void CarSidebar::slot_close_video(QString* device_id)
 {
     m_setOpeningVideo.remove(*device_id);
-    delete device_id;
 
     if (*device_id == m_last_car_device_id) {
         ClearLastCarInfo();
     }
+    delete device_id;
 }
 
 void CarSidebar::slot_close_all()
@@ -741,9 +744,10 @@ void CarSidebar::on_treeWidget_car_itemDoubleClicked(QTreeWidgetItem* item, int 
             return;
     }
     QString car_id = tree_item->GetCarId();
+    QString channel_alias = tree_item->GetChannelAlias();
 
     qDebug() << __FUNCTION__ << ",column:" << column << ", item name:" << strDeviceId << "\n";
-    OpenOrCloseVideo(strDeviceId, car_id);
+    OpenOrCloseVideo(strDeviceId, car_id, channel_alias);
 }
 
 void CarSidebar::on_pushButton_search_clicked()
@@ -766,28 +770,28 @@ void CarSidebar::on_pushButton_test_1_clicked()
     // 测试车辆
     QString default_name = "06495940943801";
 
-    OpenOrCloseVideo(default_name, "");
+    OpenOrCloseVideo(default_name, "", "");
 }
 
 void CarSidebar::on_pushButton_test_2_clicked()
 { // 测试车辆
     QString default_name = "06495940943802";
 
-    OpenOrCloseVideo(default_name, "");
+    OpenOrCloseVideo(default_name, "", "");
 }
 
 void CarSidebar::on_pushButton_test_3_clicked()
 { // 测试车辆
     QString default_name = "06495940943803";
 
-    OpenOrCloseVideo(default_name, "");
+    OpenOrCloseVideo(default_name, "", "");
 }
 
 void CarSidebar::on_pushButton_test_4_clicked()
 { // 测试车辆
     QString default_name = "06495940943804";
 
-    OpenOrCloseVideo(default_name, "");
+    OpenOrCloseVideo(default_name, "", "");
 }
 
 // 只要内容改变，就需要查找并跳转到对应的位置

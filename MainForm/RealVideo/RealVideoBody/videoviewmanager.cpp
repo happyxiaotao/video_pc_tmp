@@ -22,7 +22,7 @@ VideoViewManager::~VideoViewManager()
 {
     for (auto& player : m_vecPlayer) {
         m_grid_layout->removeWidget(player);
-        delete player;
+        ReleaseCarVideoPlayer(player);
     }
     m_vecPlayer.clear();
     m_grid_layout->deleteLater();
@@ -58,10 +58,9 @@ CarVideoPlayer* VideoViewManager::GetPlayer(const QString& device_id)
     CarVideoPlayer* old_player = nullptr;
     if (m_vecPlayer[index] != nullptr) {
         old_player = m_vecPlayer[index];
-        delete m_vecPlayer[index];
-        m_vecPlayer[index] = nullptr;
+        ReleaseCarVideoPlayer(m_vecPlayer[index]);
     }
-    auto player = new CarVideoPlayer();
+    auto player = CreateCarVideoPlayer();
     m_vecPlayer[index] = player;
 
     if (old_player) {
@@ -79,11 +78,14 @@ CarVideoPlayer* VideoViewManager::GetPlayer(const QString& device_id)
 
 void VideoViewManager::ReleasePlayer(CarVideoPlayer* player)
 {
+    if (player == nullptr) {
+        return;
+    }
+
     int index = -1;
     for (int i = 0; i < m_vecPlayer.size(); i++) {
         if (m_vecPlayer[i] == player) {
-            delete m_vecPlayer[i];
-            m_vecPlayer[i] = nullptr;
+            ReleaseCarVideoPlayer(m_vecPlayer[i]);
             m_vecUsed[i] = false;
             index = i;
             break;
@@ -93,7 +95,8 @@ void VideoViewManager::ReleasePlayer(CarVideoPlayer* player)
         qDebug() << __FUNCTION__ << ",release failed, not found\n";
     } else {
         m_grid_layout->removeWidget(player);
-        auto player = new CarVideoPlayer();
+        auto player = CreateCarVideoPlayer();
+        m_vecPlayer[index] = player;
         m_grid_layout->addWidget(player, index / m_col, index % m_row);
         player->ShowDefaultBackGround();
     }
@@ -107,8 +110,9 @@ void VideoViewManager::CloseAll()
         if (!player->GetDeviceId().isEmpty()) {
             player->close_video();
             m_grid_layout->removeWidget(player);
-            delete player;
-            player = new CarVideoPlayer();
+
+            ReleaseCarVideoPlayer(player);
+            player = CreateCarVideoPlayer();
             m_grid_layout->addWidget(player, i / m_col, i % m_row);
             player->ShowDefaultBackGround();
             m_vecPlayer[i] = player;
@@ -158,8 +162,7 @@ void VideoViewManager::ChangeWinCount(WinCountType type)
 
     // m_vecPlayer如果不够，则添加
     for (int i = nOldCapacity; i < nNewCapacity; i++) {
-        auto player = new CarVideoPlayer();
-        // player->ShowDefaultBackGround();
+        auto player = CreateCarVideoPlayer();
         m_vecPlayer.append(player);
     }
 
@@ -184,10 +187,13 @@ void VideoViewManager::ChangeWinCount(WinCountType type)
         auto& player = m_vecPlayer.back();
 
         QString* device_id = new QString(player->GetDeviceId());
-        emit m_real_video_body->sig_close_video(device_id);
+        qDebug() << __FUNCTION__ << ",*device_id:" << *device_id << "\n";
+        // emit m_real_video_body->sig_close_video(device_id);
+        emit sig_close_video(device_id);
 
         player->close_video();
-        delete player;
+
+        ReleaseCarVideoPlayer(player);
         m_vecPlayer.pop_back();
     }
     //设置m_vecUsed
@@ -249,6 +255,7 @@ void VideoViewManager::ClearGridLayout(int nOldCapacity, int nNewCapacity)
         m_grid_layout->removeWidget(child->widget());
         delete child;
     }
+
     // 设置布局stretch为0
     int row = 0;
     int col = 0;
@@ -258,4 +265,36 @@ void VideoViewManager::ClearGridLayout(int nOldCapacity, int nNewCapacity)
         m_grid_layout->setRowStretch(row, 0);
         m_grid_layout->setColumnStretch(col, 0);
     }
+}
+
+CarVideoPlayer* VideoViewManager::CreateCarVideoPlayer()
+{
+    auto player = new CarVideoPlayer();
+    BindOrUnBindCarVideoPlayerSignals(player, true);
+    return player;
+}
+
+void VideoViewManager::ReleaseCarVideoPlayer(CarVideoPlayer*& player)
+{
+    BindOrUnBindCarVideoPlayerSignals(player, false);
+    delete player;
+    player = nullptr;
+}
+
+void VideoViewManager::BindOrUnBindCarVideoPlayerSignals(CarVideoPlayer* player, bool bBind)
+{
+    if (bBind) {
+        connect(player, &CarVideoPlayer::sig_close_video_by_pushbutton, this, &VideoViewManager::slot_close_video_by_car_video_player);
+    } else {
+        disconnect(player, &CarVideoPlayer::sig_close_video_by_pushbutton, this, &VideoViewManager::slot_close_video_by_car_video_player);
+    }
+}
+
+void VideoViewManager::slot_close_video_by_car_video_player(QString* device_id)
+{
+    auto player = GetPlayer(*device_id);
+    ReleasePlayer(player);
+
+    // 通知CarSiderbar关闭此通道的缓存，支持重新点击，重新加载
+    emit sig_close_video(device_id);
 }

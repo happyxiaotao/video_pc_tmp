@@ -17,6 +17,8 @@ public:
     explicit VideoViewManager(RealVideoBody* real_video_body, QWidget* body);
     ~VideoViewManager();
 signals:
+    void sig_close_video(QString* device_id);
+
 public:
     inline int Capacity() { return m_vecPlayer.size(); }
     int Size();
@@ -39,6 +41,14 @@ private:
 
     // 用来删除gridlayout布局中的组件
     void ClearGridLayout(int nOldCapacity, int nNewCapacity);
+
+    // 创建car_video_player
+    CarVideoPlayer* CreateCarVideoPlayer();
+    void ReleaseCarVideoPlayer(CarVideoPlayer*& player);
+    // 绑定或者解绑videoPlayer的信号
+    void BindOrUnBindCarVideoPlayerSignals(CarVideoPlayer* player, bool bBind = true);
+private slots:
+    void slot_close_video_by_car_video_player(QString* device_id);
 
 private:
     RealVideoBody* m_real_video_body;
