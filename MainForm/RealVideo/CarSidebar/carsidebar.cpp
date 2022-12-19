@@ -368,6 +368,7 @@ void CarSidebar::SetCarTree(const QList<CarChannel*>& listChannel, TreeCarInfoIt
         TreeCarInfoItem* item = new TreeCarInfoItem();
         item->SetCarChannel(iter);
         item->SetCarId(car_id);
+
         ADD_LIST_WIDGET_ITEM(list, item, iter->GetAliasName());
 
         // 设置通道图标
@@ -763,35 +764,6 @@ void CarSidebar::on_lineEdit_search_input_editingFinished()
     qDebug() << __FUNCTION__ << "\n";
     const QString car_no = ui->lineEdit_search_input->text();
     FindAndJumpFromTree(car_no);
-}
-
-void CarSidebar::on_pushButton_test_1_clicked()
-{
-    // 测试车辆
-    QString default_name = "06495940943801";
-
-    OpenOrCloseVideo(default_name, "", "");
-}
-
-void CarSidebar::on_pushButton_test_2_clicked()
-{ // 测试车辆
-    QString default_name = "06495940943802";
-
-    OpenOrCloseVideo(default_name, "", "");
-}
-
-void CarSidebar::on_pushButton_test_3_clicked()
-{ // 测试车辆
-    QString default_name = "06495940943803";
-
-    OpenOrCloseVideo(default_name, "", "");
-}
-
-void CarSidebar::on_pushButton_test_4_clicked()
-{ // 测试车辆
-    QString default_name = "06495940943804";
-
-    OpenOrCloseVideo(default_name, "", "");
 }
 
 // 只要内容改变，就需要查找并跳转到对应的位置

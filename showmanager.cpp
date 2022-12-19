@@ -19,8 +19,11 @@ ShowManager::~ShowManager()
 void ShowManager::slot_login_success(QString* user, QJsonValue* data)
 {
     m_login->hide();
-    m_main_form = new MainForm();
+    m_main_form = new MainForm(*user);
     m_main_form->show();
+
+    delete user;
+    delete data;
 }
 
 void ShowManager::Start()

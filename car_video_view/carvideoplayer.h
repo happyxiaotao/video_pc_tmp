@@ -59,6 +59,10 @@ private slots:
     void on_pushButton_clicked();
 
 private:
+    static QString s_pc_server_ip;
+    static uint16_t s_pc_server_port;
+
+private:
     Ui::CarVideoPlayer* ui;
     int m_inst_id;
     CarVideoClient* m_car_video_client; //汽车客户端，会在线程中运行，处理数据收发与数据编解码

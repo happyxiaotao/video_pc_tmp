@@ -34,16 +34,19 @@
      <property name="minimumSize">
       <size>
        <width>0</width>
-       <height>40</height>
+       <height>35</height>
       </size>
      </property>
      <property name="maximumSize">
       <size>
        <width>16777215</width>
-       <height>50</height>
+       <height>35</height>
       </size>
      </property>
      <layout class="QGridLayout" name="gridLayout_realvideo_control">
+      <property name="bottomMargin">
+       <number>0</number>
+      </property>
       <item row="0" column="3">
        <widget class="QComboBox" name="comboBox_2">
         <property name="minimumSize">

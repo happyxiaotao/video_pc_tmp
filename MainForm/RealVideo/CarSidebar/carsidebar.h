@@ -82,14 +82,6 @@ private slots:
 
     void on_lineEdit_search_input_editingFinished();
 
-    void on_pushButton_test_1_clicked();
-
-    void on_pushButton_test_2_clicked();
-
-    void on_pushButton_test_3_clicked();
-
-    void on_pushButton_test_4_clicked();
-
     void on_lineEdit_search_input_textChanged(const QString& arg1);
 
     void on_pushButton_clicked();

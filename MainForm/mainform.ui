@@ -13,12 +13,34 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout" rowstretch="1,10,0">
+  <layout class="QGridLayout" name="gridLayout" rowstretch="1,10">
+   <property name="leftMargin">
+    <number>0</number>
+   </property>
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="rightMargin">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
+    <number>0</number>
+   </property>
+   <property name="spacing">
+    <number>0</number>
+   </property>
    <item row="0" column="0">
-    <widget class="QWidget" name="widget_main_menu" native="true"/>
+    <widget class="ClientHeader" name="widget_main_header" native="true">
+     <property name="styleSheet">
+      <string notr="true"/>
+     </property>
+    </widget>
    </item>
    <item row="1" column="0">
     <widget class="QStackedWidget" name="stackedWidget">
+     <property name="styleSheet">
+      <string notr="true"/>
+     </property>
      <widget class="RealVideo" name="page_real_video"/>
     </widget>
    </item>
@@ -29,6 +51,12 @@
    <class>RealVideo</class>
    <extends>QWidget</extends>
    <header>realvideo.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>ClientHeader</class>
+   <extends>QWidget</extends>
+   <header location="global">clientheader.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

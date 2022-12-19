@@ -1,4 +1,5 @@
 #include "carvideoplayer.h"
+#include "../Common/ini_config.h"
 #include "ui_carvideoplayer.h"
 #include <QDir>
 #include <QFileInfo>
@@ -8,6 +9,8 @@ int CarVideoPlayer::s_inst_id = 0;
 QImage CarVideoPlayer::s_default_background_img;
 QImage CarVideoPlayer::s_default_no_data_img;
 QString CarVideoPlayer::s_resource_dir = QDir::currentPath() + "/resource";
+QString CarVideoPlayer::s_pc_server_ip;
+uint16_t CarVideoPlayer::s_pc_server_port = -1;
 
 CarVideoPlayer::CarVideoPlayer(QWidget* parent)
     : QWidget(parent)
@@ -51,6 +54,9 @@ CarVideoPlayer::CarVideoPlayer(QWidget* parent)
 
         QString video_no_data_path = s_resource_dir + QString("/real_video/video-no_data.png");
         s_default_no_data_img.load(video_no_data_path);
+
+        s_pc_server_ip = QString::fromStdString(g_ini->Get("pc_server", "ip", ""));
+        s_pc_server_port = g_ini->GetInteger("pc_server", "port", -1);
     }
 }
 
@@ -99,9 +105,12 @@ void CarVideoPlayer::resizeEvent(QResizeEvent* event)
 
 void CarVideoPlayer::open_video(const QString& device_id, const QString& channel_alias)
 {
-    QHostAddress* host = new QHostAddress("61.136.148.230");
-    // QHostAddress* host = new QHostAddress("127.0.0.1");
-    uint16_t* port = new uint16_t(9521);
+    if (s_pc_server_ip.isEmpty() || s_pc_server_port == (uint16_t)-1) {
+        return;
+    }
+
+    QHostAddress* host = new QHostAddress(s_pc_server_ip);
+    uint16_t* port = new uint16_t(s_pc_server_port);
     QString* id = new QString(device_id);
     emit sig_connect(host, port, id);
     m_device_id = device_id;
