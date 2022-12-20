@@ -214,6 +214,11 @@ void VideoViewManager::ChangeWinCount(WinCountType type)
     }
 }
 
+void VideoViewManager::ChangeWinView(WinViewType type)
+{
+    emit sig_update_view_width_height_prop(static_cast<int>(type));
+}
+
 void VideoViewManager::GetLocation(int& row, int& col)
 {
     row = col = -1;
@@ -285,8 +290,10 @@ void VideoViewManager::BindOrUnBindCarVideoPlayerSignals(CarVideoPlayer* player,
 {
     if (bBind) {
         connect(player, &CarVideoPlayer::sig_close_video_by_pushbutton, this, &VideoViewManager::slot_close_video_by_car_video_player);
+        connect(this, &VideoViewManager::sig_update_view_width_height_prop, player, &CarVideoPlayer::slot_update_width_height_prop);
     } else {
         disconnect(player, &CarVideoPlayer::sig_close_video_by_pushbutton, this, &VideoViewManager::slot_close_video_by_car_video_player);
+        disconnect(this, &VideoViewManager::sig_update_view_width_height_prop, player, &CarVideoPlayer::slot_update_width_height_prop);
     }
 }
 

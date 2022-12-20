@@ -13,6 +13,10 @@ class MainForm : public QWidget {
 public:
     explicit MainForm(const QString& user);
     ~MainForm();
+signals:
+    void sig_quit_account();
+private slots:
+    void slot_quit_account();
 
 private:
     Ui::MainForm* ui;

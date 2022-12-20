@@ -31,12 +31,22 @@ ClientHeader::ClientHeader(QWidget* parent)
     int button_height = ui->pushButton->height();
     int icon_width = button_height * 2 / 3;
     ui->pushButton->setIconSize(QSize(icon_width, icon_width));
-    ui->pushButton->setStyleSheet("background-color:rgb(32,91,229);color:rgb(255,255,255);");
+    ui->pushButton->setStyleSheet("border:none;background-color:rgb(32,91,229);color:rgb(255,255,255);");
 
     QString user_icon_path = s_resource_dir + "/client_header/user.jpg";
     QImage user_img(user_icon_path);
     QImage user_new_img = user_img.scaled(ui->label_user->size(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
     ui->label_user->setPixmap(QPixmap::fromImage(user_new_img));
+
+    QString quit_account_logo_path = s_resource_dir + "/client_header/quit_account.png";
+    ui->pushButton_quit_account->setIcon(QIcon(quit_account_logo_path));
+    ui->pushButton_quit_account->setIconSize(QSize(ui->pushButton_quit_account->height(), ui->pushButton_quit_account->height()));
+    ui->pushButton_quit_account->setStyleSheet( //"border:none;"
+        "QPushButton{border:none;background-color:rgb(51, 137, 255);}"
+        "QPushButton:hover{background-color:rgb(32, 91, 229);}"
+        "QPushButton:pressed{background-color:rgb(0,0,127);}");
+
+    ui->label_quit_account_text->setStyleSheet("color:rgb(255,255,255);");
 }
 
 ClientHeader::~ClientHeader()
@@ -63,19 +73,8 @@ void ClientHeader::paintEvent(QPaintEvent* event)
     p.drawRect(rect());
 }
 
-void ClientHeader::enterEvent(QEvent* event)
+void ClientHeader::on_pushButton_quit_account_clicked()
 {
-    qDebug() << __FUNCTION__ << "\n";
-
-    // 判断鼠标是否在头像上
-    if (ui->label_user->geometry().contains(QCursor::pos())) {
-        qDebug() << __FUNCTION__ << ", ok\n";
-    } else {
-        qDebug() << __FUNCTION__ << ", failed\n";
-    }
-}
-
-void ClientHeader::leaveEvent(QEvent* event)
-{
-    qDebug() << __FUNCTION__ << "\n";
+    // 点击退出账号
+    emit sig_quit_account();
 }

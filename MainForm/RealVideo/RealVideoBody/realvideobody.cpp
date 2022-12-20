@@ -28,6 +28,12 @@ RealVideoBody::RealVideoBody(QWidget* parent)
     // WinCountType type = WinCountType::One_One;
     WinCountType type = WinCountType::Three_Three;
     m_view_manager->ChangeWinCount(type);
+
+    // 默认满屏
+    int view_index = 0;
+    ui->comboBox_real_video_prop->setCurrentIndex(view_index);
+    WinViewType view_type = WinViewType::kFullScreen;
+    m_view_manager->ChangeWinView(view_type);
 }
 
 RealVideoBody::~RealVideoBody()
@@ -117,4 +123,45 @@ void RealVideoBody::on_comboBox_real_video_wincnt_currentIndexChanged(int index)
         break;
     }
     m_view_manager->ChangeWinCount(type);
+}
+
+void RealVideoBody::on_comboBox_4_currentIndexChanged(int index)
+{
+    // 0 --  满屏播放
+    // 1 --  2:1显示
+    // 2 --  16:9显示
+    // 3 --  4:3显示
+    // 4 --  1:1显示
+    // 5 --  3:4显示
+    // 6 --  1:2显示
+    // 7 --  9:16显示
+
+    qDebug() << __FUNCTION__ << ",index=" << index << "\n";
+    WinViewType type = WinViewType::kFullScreen;
+    switch (index) {
+    case 1:
+        type = WinViewType::k2To1;
+        break;
+    case 2:
+        type = WinViewType::k16To9;
+        break;
+    case 3:
+        type = WinViewType::k4To3;
+        break;
+    case 4:
+        type = WinViewType::k1To1;
+        break;
+    case 5:
+        type = WinViewType::k3To4;
+        break;
+    case 6:
+        type = WinViewType::k1To2;
+        break;
+    case 7:
+        type = WinViewType::k9To16;
+        break;
+    default:
+        break;
+    }
+    m_view_manager->ChangeWinView(type);
 }

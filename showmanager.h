@@ -14,6 +14,7 @@ public:
 signals:
 private slots:
     void slot_login_success(QString* user, QJsonValue* data);
+    void slot_quit_account();
 
 public:
     void Start();

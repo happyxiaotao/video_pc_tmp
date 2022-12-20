@@ -7,6 +7,18 @@
 #include <QThread>
 #include <QWidget>
 
+enum class WinViewType : int {
+    kNone,
+    kFullScreen, //满屏播放
+    k2To1, // 2:1
+    k16To9, // 16:9
+    k4To3,
+    k1To1,
+    k3To4,
+    k1To2,
+    k9To16,
+};
+
 namespace Ui {
 class CarVideoPlayer;
 }
@@ -45,6 +57,12 @@ public slots:
     // 视频图片更新
     void slot_car_video_client_update_image(QImage* img);
 
+    // 更新图片的宽高比例
+    void slot_update_width_height_prop(int prop);
+
+private:
+    void AutoSetWidthHeight();
+
 private:
     // 重写resizeEvent函数，自适应调整背景图片的大小。
     virtual void resizeEvent(QResizeEvent* event) override;
@@ -71,6 +89,11 @@ private:
     bool m_bSendRequested; //是否发送了请求
     bool m_bConnected;
     QString m_device_id;
+
+    //图像展示的分辨率
+    WinViewType m_cur_view_type;
+    int m_img_width;
+    int m_img_height;
 };
 
 #endif // CARVIDEOPLAYER_H

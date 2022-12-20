@@ -20,6 +20,9 @@ CarVideoPlayer::CarVideoPlayer(QWidget* parent)
     , m_car_video_thread(nullptr)
     , m_bSendRequested(false)
     , m_bConnected(false)
+    , m_cur_view_type(WinViewType::kFullScreen)
+    , m_img_width(0)
+    , m_img_height(0)
 {
     ui->setupUi(this);
 
@@ -58,6 +61,9 @@ CarVideoPlayer::CarVideoPlayer(QWidget* parent)
         s_pc_server_ip = QString::fromStdString(g_ini->Get("pc_server", "ip", ""));
         s_pc_server_port = g_ini->GetInteger("pc_server", "port", -1);
     }
+
+    m_img_width = ui->label->size().width();
+    m_img_height = ui->label->size().height();
 }
 
 CarVideoPlayer::~CarVideoPlayer()
@@ -83,6 +89,7 @@ void CarVideoPlayer::slot_car_video_client_update_image(QImage* img)
 {
     // qDebug() << __FUNCTION__ << "thread_id:" << QThread::currentThreadId() << ",width=" << img->width() << "\n";
     // qDebug() << __FUNCTION__ << "img.size():" << img->size() << ",ui->label->size():" << ui->label->size() << "\n";
+
     if (img->size() == ui->label->size()) {
         ui->label->setPixmap(QPixmap::fromImage(*img));
     } else {
@@ -93,6 +100,30 @@ void CarVideoPlayer::slot_car_video_client_update_image(QImage* img)
     delete img;
 }
 
+void CarVideoPlayer::slot_update_width_height_prop(int prop)
+{
+    WinViewType type = static_cast<WinViewType>(prop);
+    if (m_cur_view_type == type) {
+        return;
+    }
+
+    m_cur_view_type = type;
+    AutoSetWidthHeight();
+}
+
+void CarVideoPlayer::AutoSetWidthHeight()
+{
+    auto size = ui->label->size();
+    switch (m_cur_view_type) {
+    case WinViewType::kFullScreen:
+        m_img_width = size.width();
+        m_img_height = size.height();
+        break;
+    default:
+        break;
+    }
+}
+
 void CarVideoPlayer::resizeEvent(QResizeEvent* event)
 {
     // qDebug() << __FUNCTION__ << "inst_id:" << m_inst_id << "\n";
@@ -101,6 +132,7 @@ void CarVideoPlayer::resizeEvent(QResizeEvent* event)
     } else if (m_bSendRequested && !m_bConnected) {
         ShowCircularBackGround();
     }
+    // 已经连接成功，则不处理，等待更新图片
 }
 
 void CarVideoPlayer::open_video(const QString& device_id, const QString& channel_alias)

@@ -2,13 +2,14 @@
 #define VIDEOVIEWMANAGER_H
 
 #include "../../car_video_view/carvideoplayer.h"
-enum WinCountType {
+enum class WinCountType : int {
     None_None,
     One_One,
     Two_Two,
     Three_Three,
     Four_Four
 };
+
 class RealVideoBody;
 class QGridLayout;
 class VideoViewManager : public QObject {
@@ -18,6 +19,8 @@ public:
     ~VideoViewManager();
 signals:
     void sig_close_video(QString* device_id);
+
+    void sig_update_view_width_height_prop(int prop);
 
 public:
     inline int Capacity() { return m_vecPlayer.size(); }
@@ -31,6 +34,7 @@ public:
     void CloseAll();
 
     void ChangeWinCount(WinCountType type);
+    void ChangeWinView(WinViewType type);
 
 private:
     void GetLocation(int& row, int& col);
