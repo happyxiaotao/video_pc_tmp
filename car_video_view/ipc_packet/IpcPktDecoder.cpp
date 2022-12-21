@@ -1,4 +1,5 @@
 #include "IpcPktDecoder.h"
+#include <QDebug>
 
 namespace ipc {
 decoder_t::ErrorType decoder_t::PushBuffer(const Buffer& buffer)
@@ -47,14 +48,20 @@ decoder_t::ErrorType decoder_t::PushBuffer(const char* buffer, size_t len)
 decoder_t::ErrorType decoder_t::Decode()
 {
     if (m_read_status == kReadHeader) {
-        auto& packet = _GetPacket();
-        packet.Clear();
+        auto& maybe_old_packet = _GetPacket();
+
+        memcpy(&m_last_packet, &maybe_old_packet, sizeof(maybe_old_packet));
+        // 打印上一次的包头数据
+        // qDebug() << "last packet info:head len:" << m_last_packet.m_uHeadLength << ",seq id:" << m_last_packet.m_uPktSeqId << ",data len:" << m_last_packet.m_uDataLength << "\n";
+
+        maybe_old_packet.Clear();
         auto error = ParseHeader();
         if (error != kNoError) {
             return error;
         }
+        auto& new_packet = _GetPacket(); // ParseHeader函数执行中，内部的m_packet_buffer可能会发送扩容，maybe_old_packet指向的旧空间，需要重新指向新空间
         m_read_status = kReadBody;
-        m_howmuch = packet.m_uDataLength;
+        m_howmuch = new_packet.m_uDataLength;
     }
 
     if (m_read_status == kReadBody) {
@@ -75,20 +82,26 @@ decoder_t::ErrorType decoder_t::ParseHeader()
     }
     packet_t* packet = (packet_t*)(m_buffer.GetBuffer());
     if (packet->m_uHeadLength != sizeof(packet_t)) {
-        // Error("ipc::decoder_t::ParseHeader, invalid uHeadLength,packet->m_uHeadLength={},fix size={}", packet->m_uHeadLength, sizeof(packet_t));
+        const char* p = m_buffer.GetBuffer();
+        size_t uBufferCapacity = m_buffer.GetCapacity();
+        size_t uLeftCapacity = m_buffer.GetLeftCapacity();
+        qDebug("uBufferCapacity=%d,uLeftCapacity=%d\n", uBufferCapacity, uLeftCapacity);
+        qDebug("ipc::decoder_t::ParseHeader, invalid uHeadLength,packet->m_uHeadLength=%ld,fix size=%ld\n", packet->m_uHeadLength, sizeof(packet_t));
+        //将数据保存起来
+        // 将相关信息，拷贝到文件中进行处理。
         return kInvalidHeader;
     }
     if (packet->m_uDataLength > m_packet_buffer.capacity()) //需要扩容来保存body数据
     {
         size_t uBufferCapacity = m_packet_buffer.capacity();
         size_t uNewBufferCapacity = std::min<size_t>(packet->m_uDataLength, uBufferCapacity * 2);
-        // Warn("ipc::decoder_t::ParseHeader, will reserve to store body data,body len={},capacity={},new capacity={}",
-        //     packet->m_uDataLength, uBufferCapacity, uNewBufferCapacity);
+        qDebug("ipc::decoder_t::ParseHeader, will reserve to store body data,body len=%d,capacity=%d,new capacity=%d", packet->m_uDataLength, uBufferCapacity, uNewBufferCapacity);
         m_packet_buffer.reserve(uNewBufferCapacity);
     }
     auto& my_packet = _GetPacket();
     memcpy(&my_packet, packet, sizeof(packet_t));
     m_buffer.Skip(m_howmuch);
+
     return kNoError;
 }
 decoder_t::ErrorType decoder_t::ParseBody()

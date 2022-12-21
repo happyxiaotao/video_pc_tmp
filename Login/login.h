@@ -29,14 +29,14 @@ private slots:
 
     void slot_http_finished(QByteArray* array);
 
-public:
-    static QString g_text_empty_username_or_password;
-    static QString g_text_login_failed_exception_1;
-    static QString g_text_login_failed_exception_2;
-    static QString g_text_login_failed_exception_3;
-
 private:
     Ui::Login* ui;
+
+    QString m_text_title;
+    QString m_text_empty_username_or_password;
+    QString m_text_login_failed_exception_1;
+    QString m_text_login_failed_exception_2;
+    QString m_text_login_failed_exception_3;
 
     QString m_user;
     QString m_password;

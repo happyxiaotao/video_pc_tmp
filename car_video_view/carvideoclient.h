@@ -21,12 +21,18 @@ signals:
     void sig_connected();
     void sig_disconnected();
     void sig_update_image(QImage* img);
+
 public slots:
     //收到信号，连接服务器，获取指定deviceid的数据
     void slot_connect(QHostAddress* host, uint16_t* port, QString* strDeviceId);
     //收到信号，断开服务器
     void slot_disconnect();
+    // 释放资源
+    void slot_release();
 
+    // 停止音频播放
+    void slot_stop_audio();
+    void slot_start_audio();
 private slots:
     void OnConnected();
     void OnDisconnected();
@@ -59,7 +65,7 @@ private:
     uint16_t* m_server_port;
     QString* m_device_id;
 
-    enum { TMP_READ_BUFFER_LEN = 50 * 1024 };
+    enum { TMP_READ_BUFFER_LEN = 100 * 1024 };
     char* m_tmp_read_buffer;
 
     ipc::decoder_t* m_ipc_decoder;

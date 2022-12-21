@@ -13,7 +13,7 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout" columnstretch="10,30,15">
+  <layout class="QGridLayout" name="gridLayout" columnstretch="5,10,5">
    <property name="leftMargin">
     <number>0</number>
    </property>
@@ -49,7 +49,14 @@
     </widget>
    </item>
    <item row="0" column="1">
-    <widget class="RealVideoBody" name="widget_real_video_body" native="true"/>
+    <widget class="RealVideoBody" name="widget_real_video_body" native="true">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+    </widget>
    </item>
    <item row="0" column="2">
     <widget class="ShowMap" name="widget_real_video_map" native="true">
@@ -62,12 +69,6 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>ShowMap</class>
-   <extends>QWidget</extends>
-   <header>showmap.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
    <class>CarSidebar</class>
    <extends>QWidget</extends>
    <header>carsidebar.h</header>
@@ -77,6 +78,12 @@
    <class>RealVideoBody</class>
    <extends>QWidget</extends>
    <header location="global">realvideobody.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>ShowMap</class>
+   <extends>QWidget</extends>
+   <header>showmap.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

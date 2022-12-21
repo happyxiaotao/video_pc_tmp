@@ -6,14 +6,15 @@
 #include <QJsonValue>
 #include <QString>
 
-class ShowManager : public QObject {
+class ShowManager : public QWidget {
     Q_OBJECT
 public:
-    explicit ShowManager(QObject* parent = nullptr);
+    explicit ShowManager(QWidget* parent = nullptr);
     ~ShowManager();
 signals:
 private slots:
     void slot_login_success(QString* user, QJsonValue* data);
+    void slot_quit_account();
 
 public:
     void Start();

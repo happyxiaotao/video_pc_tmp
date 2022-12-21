@@ -7,16 +7,21 @@ namespace Ui {
 class MainForm;
 }
 
-class MainForm : public QWidget
-{
+class MainForm : public QWidget {
     Q_OBJECT
 
 public:
-    explicit MainForm(QWidget *parent = nullptr);
+    explicit MainForm(const QString& user);
     ~MainForm();
+signals:
+    void sig_quit_account();
+private slots:
+    void slot_quit_account();
 
 private:
-    Ui::MainForm *ui;
+    Ui::MainForm* ui;
+
+    QString m_user;
 };
 
 #endif // MAINFORM_H

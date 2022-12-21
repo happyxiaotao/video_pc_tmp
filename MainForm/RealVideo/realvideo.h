@@ -7,16 +7,15 @@ namespace Ui {
 class RealVideo;
 }
 
-class RealVideo : public QWidget
-{
+class RealVideo : public QWidget {
     Q_OBJECT
 
 public:
-    explicit RealVideo(QWidget *parent = nullptr);
+    explicit RealVideo(QWidget* parent = nullptr);
     ~RealVideo();
 
 private:
-    Ui::RealVideo *ui;
+    Ui::RealVideo* ui;
 };
 
 #endif // REALVIDEO_H

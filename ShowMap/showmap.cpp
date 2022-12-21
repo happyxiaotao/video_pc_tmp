@@ -23,15 +23,27 @@ ShowMap::~ShowMap()
     delete ui;
 }
 
+void ShowMap::slot_update_car_position(QString* glat, QString* glng, QString* image, QString* direction, QString* text)
+{
+    QString strCall = QString("showCarPosition(\"%1\",\"%2\",\"%3\",\"%4\",\"%5\")").arg(*glng).arg(*glat).arg(*image).arg(*direction).arg(*text);
+    qDebug("%s,str:%s\n", __FUNCTION__, strCall.toStdString().c_str());
+    m_web_engine_view->page()->runJavaScript(strCall);
+    delete glat;
+    delete glng;
+    delete image;
+    delete direction;
+    delete text;
+}
+
 void ShowMap::slot_page_load_finished(bool bIsFinished)
 {
     qDebug() << "slotPageLoadFinished====================================" << bIsFinished;
 
     // 默认襄阳的位置
-    QString lng = "112.13555";
-    QString lat = "32.04487";
-    QString strCall = "setCenter(" + lng + "," + lat + ")";
-    //  m_web_engine_view->page()->runJavaScript(strCall);
+    // QString lng = "112.13555";
+    // QString lat = "32.04487";
+    // QString strCall = "setCenter(" + lng + "," + lat + ")";
+    // m_web_engine_view->page()->runJavaScript(strCall);
 }
 
 void ShowMap::slot_page_load_progress(int progress)
@@ -43,7 +55,6 @@ void ShowMap::slot_map_clickked()
 {
     qDebug() << __FUNCTION__ << "\n";
 }
-
 void ShowMap::InitMap()
 {
     // https://www.itdaan.com/blog/2016/10/22/48e4db27f97f.html
@@ -65,9 +76,7 @@ void ShowMap::InitMap()
 
 void ShowMap::InitData()
 {
-    // m_web_engine_view->load(QUrl("E:/code/github/video_pc_tmp/ShowMap/map_gaode.html"));
-    // m_web_engine_view->load(QUrl("E:/code/github/video_pc_tmp/ShowMap/srs.html"));
-    m_web_engine_view->load(QUrl("E:/code/github/video_pc_tmp/ShowMap/tmp.html"));
+    m_web_engine_view->load(QUrl("E:/code/github/video_pc_tmp/ShowMap/real_video_map_gaode.html"));
 }
 
 // 窗口变动时，也更新地图展示
