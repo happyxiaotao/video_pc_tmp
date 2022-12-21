@@ -12,6 +12,8 @@ VideoViewManager::VideoViewManager(RealVideoBody* real_video_body, QWidget* body
     , m_nMaxHistoryCol(0)
     , m_nMaxHistoryCapacity(0)
     , m_cur_win_count_type(WinCountType::None_None)
+    , m_cur_win_view_type(WinViewType::kNone)
+    , m_cur_win_car_play_type(WinCarPlayType::kMultiCar)
 {
     m_grid_layout = new QGridLayout(body);
     m_grid_layout->setSpacing(1);
@@ -216,7 +218,50 @@ void VideoViewManager::ChangeWinCount(WinCountType type)
 
 void VideoViewManager::ChangeWinView(WinViewType type)
 {
-    emit sig_update_view_width_height_prop(static_cast<int>(type));
+    m_cur_win_view_type = type;
+
+    for (auto& player : m_vecPlayer) {
+        player->UpdateWidthHeightProp(m_cur_win_view_type);
+    }
+}
+
+void VideoViewManager::ChangeWinCarPlayType(WinCarPlayType type)
+{
+    m_cur_win_car_play_type = type;
+}
+
+void VideoViewManager::ReleaseOtherCarIfNeed(const QString& device_id)
+{
+    if (m_cur_win_car_play_type != WinCarPlayType::kSigCar) {
+        return;
+    }
+
+    if (device_id.isEmpty()) {
+        return;
+    }
+
+    QString iccid = device_id.mid(0, 12);
+
+    // 与其他device_id对比，如果前12位不一样，则删除
+    for (int i = 0; i < m_vecPlayer.size(); i++) {
+        if (!m_vecUsed[i]) {
+            continue;
+        }
+
+        auto player = m_vecPlayer[i];
+        auto left_iccid = player->GetDeviceId().mid(0, 12);
+        if (left_iccid != iccid) {
+            player->close_video();
+            m_grid_layout->removeWidget(player);
+            ReleaseCarVideoPlayer(player);
+            player = CreateCarVideoPlayer();
+            m_grid_layout->addWidget(player, i / m_col, i % m_row);
+            player->ShowDefaultBackGround();
+            m_vecPlayer[i] = player;
+
+            m_vecUsed[i] = false;
+        }
+    }
 }
 
 void VideoViewManager::GetLocation(int& row, int& col)
@@ -276,6 +321,7 @@ CarVideoPlayer* VideoViewManager::CreateCarVideoPlayer()
 {
     auto player = new CarVideoPlayer();
     BindOrUnBindCarVideoPlayerSignals(player, true);
+    player->UpdateWidthHeightProp(m_cur_win_view_type);
     return player;
 }
 
@@ -290,10 +336,8 @@ void VideoViewManager::BindOrUnBindCarVideoPlayerSignals(CarVideoPlayer* player,
 {
     if (bBind) {
         connect(player, &CarVideoPlayer::sig_close_video_by_pushbutton, this, &VideoViewManager::slot_close_video_by_car_video_player);
-        connect(this, &VideoViewManager::sig_update_view_width_height_prop, player, &CarVideoPlayer::slot_update_width_height_prop);
     } else {
         disconnect(player, &CarVideoPlayer::sig_close_video_by_pushbutton, this, &VideoViewManager::slot_close_video_by_car_video_player);
-        disconnect(this, &VideoViewManager::sig_update_view_width_height_prop, player, &CarVideoPlayer::slot_update_width_height_prop);
     }
 }
 

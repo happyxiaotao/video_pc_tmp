@@ -104,6 +104,9 @@ void CarVideoClient::OnConnected()
 {
     qDebug() << __FUNCTION__ << ",thread_id:" << QThread::currentThreadId() << "\n";
     qDebug() << __FUNCTION__ << ",host:" << *m_server_address << ",port:" << *m_server_port << ",device_id:" << *m_device_id << "\n";
+
+    emit sig_connected();
+
     // 发送获取视频数据请求
     int ret = SendIpcPkt(ipc::IPC_PKT_SUBSCRIBE_DEVICE_ID, m_device_id->toStdString());
     if (ret < 0) {
@@ -113,6 +116,8 @@ void CarVideoClient::OnConnected()
 
 void CarVideoClient::OnDisconnected()
 {
+    emit sig_disconnected();
+
     qDebug() << __FUNCTION__ << ",thread_id:" << QThread::currentThreadId() << "\n";
     m_client_socket->abort();
 }
@@ -151,6 +156,16 @@ void CarVideoClient::slot_release()
     this->deleteLater();
     QThread::currentThread()->exit(0);
     QThread::currentThread()->deleteLater();
+}
+
+void CarVideoClient::slot_stop_audio()
+{
+    m_audio_player->Stop();
+}
+
+void CarVideoClient::slot_start_audio()
+{
+    m_audio_player->Play();
 }
 
 void CarVideoClient::InitVar()

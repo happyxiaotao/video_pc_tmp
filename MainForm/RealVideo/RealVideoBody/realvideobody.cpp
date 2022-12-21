@@ -63,6 +63,9 @@ void RealVideoBody::slot_open_video(QString* _device_id, QString* _channel_alias
 
     player->SetDeviceId(device_id);
     player->open_video(device_id, channel_alias);
+
+    //如果是单车播放，则需要删掉其他车辆
+    m_view_manager->ReleaseOtherCarIfNeed(device_id);
 }
 
 void RealVideoBody::slot_close_video(QString* _device_id)
@@ -125,7 +128,7 @@ void RealVideoBody::on_comboBox_real_video_wincnt_currentIndexChanged(int index)
     m_view_manager->ChangeWinCount(type);
 }
 
-void RealVideoBody::on_comboBox_4_currentIndexChanged(int index)
+void RealVideoBody::on_comboBox_real_video_prop_currentIndexChanged(int index)
 {
     // 0 --  满屏播放
     // 1 --  2:1显示
@@ -164,4 +167,15 @@ void RealVideoBody::on_comboBox_4_currentIndexChanged(int index)
         break;
     }
     m_view_manager->ChangeWinView(type);
+}
+
+void RealVideoBody::on_comboBox_real_video_car_count_currentIndexChanged(int index)
+{
+    // 0 -- 多车播放
+    // 1 -- 单车播放
+    if (index == 0) {
+        m_view_manager->ChangeWinCarPlayType(WinCarPlayType::kMultiCar);
+    } else if (index == 1) {
+        m_view_manager->ChangeWinCarPlayType(WinCarPlayType::kSigCar);
+    }
 }

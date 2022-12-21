@@ -285,7 +285,8 @@ void CarSidebar::SetCarTree(const CarGroup& parent, TreeCarInfoItem* root)
 
             // 除了展示车牌外，还需要展示ACC状态，并设置对应的颜色
 
-            QString strShow = iter->GetCarNo();
+            QString car_no = iter->GetCarNo();
+            QString strShow = car_no;
             strShow.append(" ");
             const QString& acc = iter->GetAcc();
             if (acc == "0") {
@@ -319,7 +320,7 @@ void CarSidebar::SetCarTree(const CarGroup& parent, TreeCarInfoItem* root)
             item->SetCarInfo(iter);
             QString car_id = iter->GetId();
             item->SetCarId(car_id);
-            SetCarTree(listChannel, item, car_id);
+            SetCarTree(listChannel, item, car_id, car_no);
             ADD_LIST_WIDGET_ITEM(list, item, strShow);
         }
 
@@ -361,13 +362,14 @@ void CarSidebar::SetCarTree(const CarGroup& parent, TreeCarInfoItem* root)
     list.clear();
 }
 
-void CarSidebar::SetCarTree(const QList<CarChannel*>& listChannel, TreeCarInfoItem* root, const QString& car_id)
+void CarSidebar::SetCarTree(const QList<CarChannel*>& listChannel, TreeCarInfoItem* root, const QString& car_id, const QString& car_no)
 {
     QList<QTreeWidgetItem*> list;
     for (auto& iter : listChannel) {
         TreeCarInfoItem* item = new TreeCarInfoItem();
         item->SetCarChannel(iter);
         item->SetCarId(car_id);
+        item->SetCarChannelCarNo(car_no);
 
         ADD_LIST_WIDGET_ITEM(list, item, iter->GetAliasName());
 
@@ -450,10 +452,12 @@ void CarSidebar::FindAndJumpFromTree(const QString& car_no)
     }
 }
 
-void CarSidebar::OpenOrCloseVideo(const QString& device_id, const QString& carId, const QString& channel_alias)
+void CarSidebar::OpenOrCloseVideo(const QString& device_id, const QString& carId, const QString& car_no, const QString& channel_alias)
 {
     QString* pDeviceId = new QString(device_id);
-    QString* pChannelAlias = new QString(channel_alias);
+    QString channel_show_alias = car_no + "-" + channel_alias;
+    QString* pChannelAlias = new QString();
+    pChannelAlias->swap(channel_show_alias);
 
     if (m_setOpeningVideo.find(device_id) != m_setOpeningVideo.end()) {
         m_setOpeningVideo.remove(device_id);
@@ -746,9 +750,10 @@ void CarSidebar::on_treeWidget_car_itemDoubleClicked(QTreeWidgetItem* item, int 
     }
     QString car_id = tree_item->GetCarId();
     QString channel_alias = tree_item->GetChannelAlias();
+    QString car_no = tree_item->GetCarChannelCarNo();
 
     qDebug() << __FUNCTION__ << ",column:" << column << ", item name:" << strDeviceId << "\n";
-    OpenOrCloseVideo(strDeviceId, car_id, channel_alias);
+    OpenOrCloseVideo(strDeviceId, car_id, car_no, channel_alias);
 }
 
 void CarSidebar::on_pushButton_search_clicked()

@@ -3,6 +3,7 @@
 AudioPlayer::AudioPlayer()
     : m_audio_out(nullptr)
     , m_audio_device(nullptr)
+    , m_bPlay(true)
 {
     m_audio_fmt.setSampleRate(8000);
     m_audio_fmt.setSampleSize(16);
@@ -34,10 +35,30 @@ AudioPlayer::~AudioPlayer()
 
 void AudioPlayer::WriteData(const char* buffer, int len)
 {
+    if (!m_bPlay) {
+        return;
+    }
+
     m_audio_device->AddPcmData(buffer, len);
 
     if (!IsActiveState()) {
         m_audio_out->start(m_audio_device);
         // qDebug("AudioPlayer::WriteData, start player\n");
+    }
+}
+
+void AudioPlayer::Stop()
+{
+    m_bPlay = false;
+    if (m_audio_out) {
+        m_audio_out->stop();
+    }
+}
+
+void AudioPlayer::Play()
+{
+    m_bPlay = true;
+    if (m_audio_out) {
+        m_audio_out->start(m_audio_device);
     }
 }

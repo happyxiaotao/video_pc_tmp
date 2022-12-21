@@ -10,6 +10,11 @@ enum class WinCountType : int {
     Four_Four
 };
 
+enum class WinCarPlayType : int {
+    kMultiCar, //多车播放
+    kSigCar, // 单车播放
+};
+
 class RealVideoBody;
 class QGridLayout;
 class VideoViewManager : public QObject {
@@ -19,8 +24,6 @@ public:
     ~VideoViewManager();
 signals:
     void sig_close_video(QString* device_id);
-
-    void sig_update_view_width_height_prop(int prop);
 
 public:
     inline int Capacity() { return m_vecPlayer.size(); }
@@ -35,6 +38,9 @@ public:
 
     void ChangeWinCount(WinCountType type);
     void ChangeWinView(WinViewType type);
+    void ChangeWinCarPlayType(WinCarPlayType type);
+
+    void ReleaseOtherCarIfNeed(const QString& device_id);
 
 private:
     void GetLocation(int& row, int& col);
@@ -68,6 +74,8 @@ private:
     int m_nMaxHistoryCapacity;
 
     WinCountType m_cur_win_count_type;
+    WinViewType m_cur_win_view_type;
+    WinCarPlayType m_cur_win_car_play_type;
 };
 
 #endif // VIDEOVIEWMANAGER_H

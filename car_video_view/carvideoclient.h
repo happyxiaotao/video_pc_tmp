@@ -29,6 +29,10 @@ public slots:
     void slot_disconnect();
     // 释放资源
     void slot_release();
+
+    // 停止音频播放
+    void slot_stop_audio();
+    void slot_start_audio();
 private slots:
     void OnConnected();
     void OnDisconnected();

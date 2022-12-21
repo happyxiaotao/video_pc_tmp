@@ -28,7 +28,7 @@ private:
     void SetCarTree(const QJsonValue& c, const QJsonValue& m);
     void SetCarTree(QMap<QString, CarGroup*>& mapGroup);
     void SetCarTree(const CarGroup& parent, TreeCarInfoItem* root);
-    void SetCarTree(const QList<CarChannel*>& listChannel, TreeCarInfoItem* root, const QString& car_id);
+    void SetCarTree(const QList<CarChannel*>& listChannel, TreeCarInfoItem* root, const QString& car_id, const QString& car_no);
 
     void ClearCarListForSearch();
     void UpdateCarListForSearch(QMap<QString, CarGroup*>& mapGroup);
@@ -37,7 +37,7 @@ private:
 
     void FindAndJumpFromTree(const QString& car_no);
 
-    void OpenOrCloseVideo(const QString& device_id, const QString& carId, const QString& channel_alias);
+    void OpenOrCloseVideo(const QString& device_id, const QString& carId, const QString& car_no, const QString& channel_alias);
 
     void ClearRealVideoTree();
     void GetRealVideoTree();

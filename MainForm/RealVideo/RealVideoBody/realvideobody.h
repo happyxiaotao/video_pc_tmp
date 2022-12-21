@@ -36,7 +36,9 @@ private slots:
 
     void on_comboBox_real_video_wincnt_currentIndexChanged(int index);
 
-    void on_comboBox_4_currentIndexChanged(int index);
+    void on_comboBox_real_video_prop_currentIndexChanged(int index);
+
+    void on_comboBox_real_video_car_count_currentIndexChanged(int index);
 
 private:
     Ui::RealVideoBody* ui;
