@@ -74,12 +74,6 @@ void Login::on_pushButton_login_clicked()
     // 获取用户密码
     QString password = ui->LineEdit_password->text();
 
-    const QString default_user = "KFadmin";
-    const QString default_password = "herx123###";
-
-    user = default_user;
-    password = default_password;
-
     if (user.isEmpty() || password.isEmpty()) {
         QMessageBox::warning(this, m_text_title, m_text_empty_username_or_password);
         return;
