@@ -1,7 +1,10 @@
 #include "showmap.h"
 #include "ui_showmap.h"
+#include <QDir>
 #include <QNetworkProxyFactory>
 #include <QWebEngineSettings>
+
+QString ShowMap::s_html_dir = QDir::currentPath() + "/resource/html";
 
 ShowMap::ShowMap(QWidget* parent)
     : QWidget(parent)
@@ -76,7 +79,9 @@ void ShowMap::InitMap()
 
 void ShowMap::InitData()
 {
-    m_web_engine_view->load(QUrl("E:/code/github/video_pc_tmp/ShowMap/real_video_map_gaode.html"));
+    QString gaode_html_path = s_html_dir + "/real_video_map_gaode.html";
+    // m_web_engine_view->load(QUrl("E:/code/github/video_pc_tmp/ShowMap/real_video_map_gaode.html"));
+    m_web_engine_view->load(QUrl(gaode_html_path));
 }
 
 // 窗口变动时，也更新地图展示

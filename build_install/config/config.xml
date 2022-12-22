@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Installer>
-    <Name>智能监控</Name>
+    <Name>途观卫星定位智能监控服务平台</Name>
     <Version>0.1.1</Version>
     <Title>智能监控</Title>
     <Publisher>途观科技</Publisher>
     <!-- Directory name is used in component.xml -->
-    <StartMenuDir>tuguan_aged</StartMenuDir>
-    <TargetDir>D:\herx</TargetDir>
+    <StartMenuDir>tuguan_video</StartMenuDir>
+    <TargetDir>D:\tuguan</TargetDir>
 </Installer>

@@ -28,6 +28,9 @@ protected:
     virtual void resizeEvent(QResizeEvent* event) override;
 
 private:
+    static QString s_html_dir;
+
+private:
     Ui::ShowMap* ui;
     QWebEngineView* m_web_engine_view;
 };
