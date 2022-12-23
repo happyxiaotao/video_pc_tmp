@@ -28,6 +28,8 @@ RealVideoBody::RealVideoBody(QWidget* parent)
     // WinCountType type = WinCountType::One_One;
     WinCountType type = WinCountType::Three_Three;
     m_view_manager->ChangeWinCount(type);
+    // emit sig_update_max_view_count(9);//这个时候emit由于，在构造函数中，还未执行到绑定信号的操作。所以此时emit是不生效的。
+    // 提供了 GetMaxCount()函数来代替
 
     // 默认满屏
     int view_index = 0;
@@ -42,6 +44,30 @@ RealVideoBody::~RealVideoBody()
 
     delete ui;
     delete m_view_manager;
+}
+
+int RealVideoBody::GetMaxCount()
+{
+    // 0 -- 1*1
+    // 1 -- 2*2
+    // 2 -- 3*3
+    // 4 -- 4*4
+    int index = ui->comboBox_real_video_wincnt->currentIndex();
+    int max_count = 1;
+    switch (index) {
+    case 1:
+        max_count = 4;
+        break;
+    case 2:
+        max_count = 9;
+        break;
+    case 3:
+        max_count = 16;
+        break;
+    default:
+        break;
+    }
+    return max_count;
 }
 
 void RealVideoBody::slot_open_video(QString* _device_id, QString* _channel_alias)
@@ -109,23 +135,28 @@ void RealVideoBody::on_comboBox_real_video_wincnt_currentIndexChanged(int index)
     // 1 -- 2*2
     // 2 -- 3*3
     // 4 -- 4*4
+    int max_count = 1;
 
     qDebug() << __FUNCTION__ << ",index=" << index << "\n";
     WinCountType type = WinCountType::One_One;
     switch (index) {
     case 1:
         type = WinCountType::Two_Two;
+        max_count = 4;
         break;
     case 2:
         type = WinCountType::Three_Three;
+        max_count = 9;
         break;
     case 3:
         type = WinCountType::Four_Four;
+        max_count = 16;
         break;
     default:
         break;
     }
     m_view_manager->ChangeWinCount(type);
+    emit sig_update_max_view_count(max_count);
 }
 
 void RealVideoBody::on_comboBox_real_video_prop_currentIndexChanged(int index)

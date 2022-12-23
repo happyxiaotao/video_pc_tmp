@@ -32,3 +32,8 @@ void RealVideoBodyViews::FullOrNormalScreen()
         m_bIsFullScreen = true;
     }
 }
+
+void RealVideoBodyViews::mousePressEvent(QMouseEvent *event)
+{
+
+}

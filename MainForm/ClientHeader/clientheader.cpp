@@ -40,11 +40,14 @@ ClientHeader::ClientHeader(QWidget* parent)
 
     QString quit_account_logo_path = s_resource_dir + "/client_header/quit_account.png";
     ui->pushButton_quit_account->setIcon(QIcon(quit_account_logo_path));
-    ui->pushButton_quit_account->setIconSize(QSize(ui->pushButton_quit_account->height(), ui->pushButton_quit_account->height()));
+    int width, height;
+    width = height = ui->pushButton_quit_account->height() * 2 / 3;
+    QSize size(width, height);
+    ui->pushButton_quit_account->setIconSize(size);
     ui->pushButton_quit_account->setStyleSheet( //"border:none;"
-        "QPushButton{border:none;background-color:rgb(51, 137, 255);}"
-        "QPushButton:hover{background-color:rgb(32, 91, 229);}"
-        "QPushButton:pressed{background-color:rgb(0,0,127);}");
+        "QPushButton{border:none;background-color:rgb(51, 137, 255);}");
+    //   "QPushButton:hover{background-color:rgb(32, 91, 229);}"
+    //   "QPushButton:pressed{background-color:rgb(0,0,127);}"
 
     ui->label_quit_account_text->setStyleSheet("color:rgb(255,255,255);");
 }

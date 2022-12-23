@@ -15,6 +15,9 @@ public:
     explicit ShowMap(QWidget* parent = nullptr);
     ~ShowMap();
 public slots:
+    // 清空地图上的标记点
+    void slot_clear_car_position();
+    // 设置地图上的标记点
     void slot_update_car_position(QString* glat, QString* glng, QString* image, QString* direction, QString* text);
 private slots:
     void slot_page_load_finished(bool bIsFinished); //地图加载完毕槽函数

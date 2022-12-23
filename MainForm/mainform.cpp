@@ -1,5 +1,7 @@
 #include "mainform.h"
 #include "ui_mainform.h"
+#include <QDir>
+#include <QIcon>
 
 MainForm::MainForm(const QString& user)
     : QWidget()
@@ -7,6 +9,9 @@ MainForm::MainForm(const QString& user)
     , m_user(user)
 {
     ui->setupUi(this);
+
+    QString icon_path = QDir::currentPath() + "/resource/title/ico.png";
+    setWindowIcon(QIcon(icon_path));
 
     ui->widget_main_header->SetUserName(m_user);
 

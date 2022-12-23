@@ -50,7 +50,10 @@ bool TreeCarInfoItem::operator<(const QTreeWidgetItem& other) const
     // 1、车队比较
     if (IsGroup() && m_car_group) {
         //根据车队名称比较
-        return m_car_group->GetName() < right.m_car_group->GetName();
+        // return m_car_group->GetName() < right.m_car_group->GetName();
+        auto left = dynamic_cast<const QTreeWidgetItem&>(*this);
+        auto right = dynamic_cast<const QTreeWidgetItem&>(other);
+        return left < right; //使用默认的排序
     }
 
     // 2、车辆比较

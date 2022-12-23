@@ -285,8 +285,9 @@ void CarVideoPlayer::ShowCircularBackGround()
     //  设置背景颜色为黑色
     ui->label->setStyleSheet("QLabel{background-color:rgb(0,0,0);}"); //设置样式表
     // 暂时还未获取数据时的图片
-    QImage new_img = s_default_no_data_img.scaled(ui->label->size(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation); // 图片只展示一般内容
+    QImage new_img = s_default_no_data_img.scaled(ui->label->size() / 2, Qt::IgnoreAspectRatio, Qt::SmoothTransformation); // 图片只展示一般内容
     ui->label->setPixmap(QPixmap::fromImage(new_img));
+    ui->label->setAlignment(Qt::AlignCenter);
 }
 
 void CarVideoPlayer::ShowImgFromLabel()

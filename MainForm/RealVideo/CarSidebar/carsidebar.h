@@ -22,6 +22,8 @@ public:
     ~CarSidebar();
 
 public:
+    void UpdateMaxCount(int max_count);
+
     void UpdateCarTree();
 
 private:
@@ -54,19 +56,31 @@ private:
     QString GetIconPathByChannelType(const QJsonArray& jsonArray);
 
 signals:
+    // 对外发送信号，打开或关闭车辆信息
     void sig_open_video(QString* device_id, QString* channel_alias);
     void sig_close_video(QString* device_id);
 
+    // 对外发送信号，更新车辆位置信息
     void sig_update_car_position(QString* glat, QString* glng, QString* image, QString* direction, QString* text);
+    // 对外发送信号，删除车辆的位置标记
+    void sig_clear_car_position();
 private slots:
     // 获取视频树的回调
     void slot_http_finished_get_real_video_tree(QByteArray* array);
     // 获取定位信息的回调
     void slot_http_finished_post_real_video_position(QByteArray* array);
 
+    // 定时任务回调
     void slot_on_timer();
 public slots:
+
+    // 更新视频最大个数。超过最大个数后，再次点击，会弹框提示
+    void slot_update_max_view_count(int max_count);
+
+    // 通过窗口个数变化，被动删除的多余窗口
     void slot_close_video(QString* device_id); // 通过窗口3*3、4*4之类的变化，删除多余的视频
+
+    // 用户在视频界面，点击"全部关闭"
     void slot_close_all();
 private slots:
 
@@ -84,7 +98,7 @@ private slots:
 
     void on_lineEdit_search_input_textChanged(const QString& arg1);
 
-    void on_pushButton_clicked();
+    void on_pushButton_refresh_clicked();
 
 private:
     static QString s_resource_dir;
@@ -125,6 +139,8 @@ private:
     QTimer* m_timer;
     QString m_last_car_device_id; //最近使用的device_id
     QString m_last_car_id; // 最近使用的car_id用来在定时器中使用
+
+    int m_max_open_count; // 允许打开的最大窗口个数
 };
 
 #endif // CARSIDEBAR_H

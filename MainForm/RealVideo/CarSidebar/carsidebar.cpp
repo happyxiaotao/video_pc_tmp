@@ -42,6 +42,7 @@ CarSidebar::CarSidebar(QWidget* parent)
     , m_http_client_get_real_video_tree(nullptr)
     , m_http_client_post_real_video_position(nullptr)
     , m_search_completer(nullptr)
+    , m_max_open_count(0)
 {
     ui->setupUi(this);
 
@@ -90,6 +91,12 @@ CarSidebar::CarSidebar(QWidget* parent)
                         .arg(s_resource_dir);
     ui->treeWidget_car->setStyleSheet(style);
 
+    // 设置搜索图标
+    ui->pushButton_search->setIcon(QIcon(s_resource_dir + "/tree/search.png"));
+
+    // 设置刷新图标
+    ui->pushButton_refresh->setIcon(QIcon(s_resource_dir + "/tree/refresh.png"));
+
     // 设置定时器
     m_timer = new QTimer(this);
     connect(m_timer, &QTimer::timeout, this, &CarSidebar::slot_on_timer);
@@ -108,6 +115,11 @@ CarSidebar::~CarSidebar()
     m_timer->deleteLater();
 
     delete ui;
+}
+
+void CarSidebar::UpdateMaxCount(int max_count)
+{
+    m_max_open_count = max_count;
 }
 
 void CarSidebar::UpdateCarTree()
@@ -468,6 +480,14 @@ void CarSidebar::OpenOrCloseVideo(const QString& device_id, const QString& carId
         }
 
     } else {
+
+        // 已打开视频个数，超过了最大数量，无法继续打开
+        if (m_setOpeningVideo.size() >= m_max_open_count) {
+            delete pDeviceId;
+            delete pChannelAlias;
+            return;
+        }
+
         // 发送信号，获取对应通道的视频
         m_setOpeningVideo.insert(device_id);
 
@@ -512,12 +532,13 @@ void CarSidebar::GetRealVideoTree()
     m_http_client_get_real_video_tree->Get(request);
 }
 
-void CarSidebar::PostRealVideoPosition(const QString& device_id)
+void CarSidebar::PostRealVideoPosition(const QString& car_id)
 {
-    if (device_id.isEmpty()) {
+    if (car_id.isEmpty()) {
         return;
     }
 
+    // 已经在请求了，停止定时器
     StopTimer();
 
     QNetworkRequest request;
@@ -532,7 +553,7 @@ void CarSidebar::PostRealVideoPosition(const QString& device_id)
     request.setRawHeader("token", QByteArray(token.toStdString().c_str()));
 
     QJsonDocument doc;
-    QJsonValue jsonCarId(device_id);
+    QJsonValue jsonCarId(car_id);
     QJsonArray array;
     array.append(jsonCarId);
     QJsonObject obj;
@@ -553,6 +574,7 @@ void CarSidebar::ClearLastCarInfo()
 {
     m_last_car_device_id.clear();
     m_last_car_id.clear();
+    emit sig_clear_car_position();
 }
 
 void CarSidebar::StartTimer(int ms)
@@ -689,6 +711,7 @@ void CarSidebar::slot_http_finished_post_real_video_position(QByteArray* array)
     QString text = car_no + " " + speed + "km/h";
 
     emit sig_update_car_position(new QString(str_glat), new QString(str_glng), new QString(image_path), new QString(direction), new QString(text));
+
     // 启动定时器，目前是10s
     StartTimer(1000 * 10);
 }
@@ -696,6 +719,18 @@ void CarSidebar::slot_http_finished_post_real_video_position(QByteArray* array)
 void CarSidebar::slot_on_timer()
 {
     qDebug() << __FUNCTION__ << "\n";
+
+    // 定时更新最近一个车辆的位置信息
+    if (m_last_car_id.isEmpty()) {
+        return;
+    }
+    // 发送定位请求，获取定位信息
+    PostRealVideoPosition(m_last_car_id);
+}
+
+void CarSidebar::slot_update_max_view_count(int max_count)
+{
+    UpdateMaxCount(max_count);
 }
 
 void CarSidebar::slot_close_video(QString* device_id)
@@ -779,7 +814,7 @@ void CarSidebar::on_lineEdit_search_input_textChanged(const QString& arg1)
 }
 
 // 更新车辆树
-void CarSidebar::on_pushButton_clicked()
+void CarSidebar::on_pushButton_refresh_clicked()
 {
     UpdateCarTree();
 }

@@ -1,6 +1,7 @@
 ﻿#include "login.h"
 #include "../Common/ini_config.h"
 #include "ui_login.h"
+#include <QDir>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QMessageBox>
@@ -11,7 +12,11 @@ Login::Login(QWidget* parent)
     : QMainWindow(parent)
     , ui(new Ui::Login)
 {
+
     ui->setupUi(this);
+
+    QString icon_path = QDir::currentPath() + "/resource/title/ico.png";
+    setWindowIcon(QIcon(icon_path));
 
     connect(&m_http_client, &HttpClient::sig_handler_msg, this, &Login::slot_http_finished);
 
@@ -25,6 +30,12 @@ Login::Login(QWidget* parent)
     m_text_login_failed_exception_1 = QString::fromStdString(g_ini->Get("text", "login_failed_exception_1", ""));
     m_text_login_failed_exception_2 = QString::fromStdString(g_ini->Get("text", "login_failed_exception_2", ""));
     m_text_login_failed_exception_3 = QString::fromStdString(g_ini->Get("text", "login_failed_exception_3", ""));
+
+    // 读取json中的历史账号
+    QString filename = QDir::currentPath() + "/cache.json";
+    m_user_cache.LoadFile(filename);
+    QString last_account = m_user_cache.GetLastAccount();
+    ui->LineEdit_user->setText(last_account);
 }
 
 Login::~Login()
@@ -126,6 +137,8 @@ void Login::slot_http_finished(QByteArray* array)
     QString token = data["token"].toString();
     m_http_client.SetToken(token);
     qDebug() << "set token:" << token << "\n";
+
+    m_user_cache.UpdateLastAccount(*user);
 
     emit sig_login_success(user, json_data); // json_data对应的是json中data字段保存的值
 }

@@ -135,6 +135,11 @@ INCLUDEPATH += $$PWD/3part
 INCLUDEPATH += $$PWD/3part/spdlog
 INCLUDEPATH += $$PWD/3part/ini
 
+
+INCLUDEPATH += $$PWD/UserCache
+include($$PWD/UserCache/UserCache.pri)
+
+
 INCLUDEPATH += $$PWD/car_video_view
 include($$PWD/car_video_view/car_video_view.pri)
 
@@ -153,3 +158,6 @@ include($$PWD/MainForm/MainForm.pri)
 
 INCLUDEPATH += $$PWD/CarInfo
 include($$PWD/CarInfo/CarInfo.pri)
+
+# 设置执行程序图标
+RC_ICONS = $$PWD$$/resource/title/ico.ico

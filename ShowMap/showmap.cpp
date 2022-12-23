@@ -26,6 +26,12 @@ ShowMap::~ShowMap()
     delete ui;
 }
 
+void ShowMap::slot_clear_car_position()
+{
+    QString strCall = QString("delLastMarkers()");
+    m_web_engine_view->page()->runJavaScript(strCall);
+}
+
 void ShowMap::slot_update_car_position(QString* glat, QString* glng, QString* image, QString* direction, QString* text)
 {
     QString strCall = QString("showCarPosition(\"%1\",\"%2\",\"%3\",\"%4\",\"%5\")").arg(*glng).arg(*glat).arg(*image).arg(*direction).arg(*text);

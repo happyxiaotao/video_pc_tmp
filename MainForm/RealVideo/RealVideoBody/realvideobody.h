@@ -14,9 +14,13 @@ public:
     explicit RealVideoBody(QWidget* parent = nullptr);
     ~RealVideoBody();
 
+public:
+    int GetMaxCount();
 signals:
     void sig_close_all();
     void sig_close_video(QString* device_id);
+    // 发送信号，设置最大打开窗口个数
+    void sig_update_max_view_count(int max_count);
 public slots:
     void slot_open_video(QString* _device_id, QString* _channel_alias);
     void slot_close_video(QString* _device_id);

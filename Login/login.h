@@ -2,6 +2,7 @@
 #define LOGIN_H
 
 #include "../Common/httpclient.h"
+#include "../UserCache/usercache.h"
 #include <QMainWindow>
 
 namespace Ui {
@@ -42,6 +43,8 @@ private:
     QString m_password;
     QString m_login_url;
     HttpClient m_http_client;
+
+    UserCache m_user_cache;
 };
 
 #endif // LOGIN_H
