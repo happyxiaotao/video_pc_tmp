@@ -40,8 +40,8 @@ Name: "chinesesimplified"; MessagesFile: "compiler:Languages\ChineseSimplified.i
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: "E:\apk\video_pc_20221223140802\packages\org.tuguanproject.video_pc\data\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
-Source: "E:\apk\video_pc_20221223140802\packages\org.tuguanproject.video_pc\data\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "E:\apk\video_pc_20221223162705\packages\org.tuguanproject.video_pc\data\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
+Source: "E:\apk\video_pc_20221223162705\packages\org.tuguanproject.video_pc\data\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Registry]

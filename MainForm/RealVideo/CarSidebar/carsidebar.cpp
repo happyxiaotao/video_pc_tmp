@@ -370,6 +370,7 @@ void CarSidebar::SetCarTree(const CarGroup& parent, TreeCarInfoItem* root)
         // 统计在线个数，ACC开、ACC关个数
         root->SetGroupOnLineCount(group_nTotalCount, group_nOnLineCount, group_nAccOpenCount, group_nAccCloseCount);
     }
+
     root->addChildren(list);
     list.clear();
 }

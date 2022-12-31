@@ -67,19 +67,21 @@ void CarVideoClient::Disconnect()
         if (m_client_socket->state() == QTcpSocket::ConnectedState) {
             // auto str = m_device_id->toStdString();
             // 目前一个连接只支持一个通道订阅，后面订阅的通道会替换到前面订阅的通道。
-            SendIpcPkt(ipc::IPC_PKT_UNSUBSCRIBE_DEVICE_ID, ""); //其实没必要发，pc_server会自动取消订阅，但是使用有始有终心里舒服些，还是发一个，哈哈
+            SendIpcPkt(ipc::IPC_PKT_TYPE_UNSUBSCRIBE_DEVICE_ID, ""); //其实没必要发，pc_server会自动取消订阅，但是使用有始有终心里舒服些，还是发一个，哈哈
         }
         m_client_socket->disconnectFromHost();
     }
 }
 
-int CarVideoClient::SendIpcPkt(ipc::IpcPktType type, const char* data, size_t len)
+int CarVideoClient::SendIpcPkt(uint32_t type, const char* data, size_t len)
 {
+    int nRealType = type | ipc::IPC_PKT_FROM_PC_CLIENT;
+
     ipc::packet_t packet;
     packet.m_uHeadLength = sizeof(packet);
     packet.m_uDataLength = len;
     packet.m_uPktSeqId = GetSendIpcPktSeqId();
-    packet.m_uPktType = type;
+    packet.m_uPktType = nRealType;
     m_tmp_write_buffer->clear();
     m_tmp_write_buffer->append((char*)&packet, packet.m_uHeadLength);
     m_tmp_write_buffer->append(data, len);
@@ -108,7 +110,7 @@ void CarVideoClient::OnConnected()
     emit sig_connected();
 
     // 发送获取视频数据请求
-    int ret = SendIpcPkt(ipc::IPC_PKT_SUBSCRIBE_DEVICE_ID, m_device_id->toStdString());
+    int ret = SendIpcPkt(ipc::IPC_PKT_TYPE_SUBSCRIBE_DEVICE_ID, m_device_id->toStdString());
     if (ret < 0) {
         qDebug() << "CarVideoClient::OnConnect, send ipc packet faield, device_id:" << *m_device_id << "\n";
     }
@@ -258,7 +260,8 @@ int CarVideoClient::ProcessIpcPacketCompleted(const ipc::packet_t& packet)
     m_jt1078_packet->m_body[len] = '\0';
     p += len;
     len = 0;
-    // qDebug("1078 packet,seq=%ld", m_jt1078_packet->m_header->WdPackageSequence);
+
+    qDebug("ipc::packet seq=%ld,1078 packet,seq=%ld", packet.m_uPktSeqId, m_jt1078_packet->m_header->WdPackageSequence);
 
     Q_UNUSED(p);
     Q_UNUSED(len);

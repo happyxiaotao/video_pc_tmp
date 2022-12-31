@@ -46,8 +46,8 @@ private:
     void ConnectToHost(const QHostAddress& host, uint16_t port, const QString& strDeviceId);
     void Disconnect();
 
-    inline int SendIpcPkt(ipc::IpcPktType type, const std::string& str) { return SendIpcPkt(type, str.c_str(), str.size()); }
-    int SendIpcPkt(ipc::IpcPktType type, const char* data, size_t len);
+    inline int SendIpcPkt(uint32_t type, const std::string& str) { return SendIpcPkt(type, str.c_str(), str.size()); }
+    int SendIpcPkt(uint32_t type, const char* data, size_t len);
     uint32_t GetSendIpcPktSeqId();
 
 private:
