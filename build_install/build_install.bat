@@ -13,8 +13,11 @@ set format_time=%date:~3,4%%date:~8,2%%date:~11,2%%time:~0,2%%time:~3,2%%time:~6
 set "format_time=%format_time: =0%"
 echo %format_time%
 
+
 ::安装包所在基础目录
 set base_dir=E:\apk
+:: 安装之后的目标目录
+set target_dir=%base_dir%\video_pc_tmp
 :: 编译好的aged.exe程序所在目录
 set release_exe_path=E:\code\qt\build-video_pc_tmp-Desktop_Qt_5_15_2_MSVC2019_64bit-Release\release\video_pc_tmp.exe
 :: ffmpeg和ssl依赖库目录
@@ -63,6 +66,9 @@ copy %sdk_dll_dir%\libcrypto-1_1-x64.dll .
 copy %sdk_dll_dir%\libssl-1_1-x64.dll .
 copy %sdk_dll_dir%\swresample-4.dll .
 copy %sdk_dll_dir%\swscale-6.dll .
+:: 针对windows7系统，没有vcruntime140_1.dll的问题，打包时添加依赖。
+copy %sdk_dll_dir%\vcruntime140_1.dll .
+
 ::拷贝资源目录
 md resource
 xcopy %resource_dir% resource /e
@@ -73,3 +79,9 @@ xcopy %config_dir% conf /e
 :: 调用binarycreator.exe生成安装包
 cd %install_dir%
 %binarycreator_exe_path% -c config/config.xml -p packages video_pc_install.exe -v
+
+:: 删除目标目录
+
+:: 拷贝编译好的所有目录文件
+cd %base_dir%
+xcopy %install_dir% %target_dir%\ /e /y

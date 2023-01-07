@@ -1,4 +1,4 @@
-#include "showmap.h"
+﻿#include "showmap.h"
 #include "ui_showmap.h"
 #include <QDir>
 #include <QNetworkProxyFactory>
@@ -87,7 +87,10 @@ void ShowMap::InitData()
 {
     QString gaode_html_path = s_html_dir + "/real_video_map_gaode.html";
     // m_web_engine_view->load(QUrl("E:/code/github/video_pc_tmp/ShowMap/real_video_map_gaode.html"));
-    m_web_engine_view->load(QUrl(gaode_html_path));
+    // m_web_engine_view->load(QUrl(gaode_html_path));
+
+    QUrl url("https://tg808.gcpgps.com/monitor-control/");
+    m_web_engine_view->load(url);
 }
 
 // 窗口变动时，也更新地图展示
