@@ -96,5 +96,6 @@ void ShowMap::InitData()
 // 窗口变动时，也更新地图展示
 void ShowMap::resizeEvent(QResizeEvent* event)
 {
+    Q_UNUSED(event);
     m_web_engine_view->setGeometry(this->rect());
 }
